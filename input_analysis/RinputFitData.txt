@@ -3,3 +3,11 @@ x1 <- x[,1]
 library(fitdistrplus)
 fit.gamma <- fitdist(x, distr = "gamma", method = "mle")
 summary(fit.gamma)
+
+for (i in 1:14){
+  x <- x0[,i]
+  gamma <- fitdist(x, distr = "gamma", method = "mle")
+  lnorm <- fitdist(x, distr = "lnorm", method = "mle")
+  print(gofstat(list(gamma,lnorm), fitnames=c("gamma","lnorm")))
+}
+
