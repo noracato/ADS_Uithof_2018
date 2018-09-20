@@ -1,0 +1,5 @@
+x <- read.csv(file="C:/Users/mkoni/Documents/Üni/3-AlgorithmsForDecisionSupport/runtimes.csv", header=TRUE, sep=";")
+x1 <- x[,1]
+library(fitdistrplus)
+fit.gamma <- fitdist(x, distr = "gamma", method = "mle")
+summary(fit.gamma)
