@@ -5,7 +5,7 @@ import math
 # import matplotlib.mlab as mlab
 # import scipy.stats as stats 
 
-with open('_data/12b.csv', newline='') as data:
+with open('_data/12a.csv', newline='') as data:
 	reader = csv.reader(data, delimiter=';')
 
 	# from 6 to 22 every 15 min = 16*4 = 64 timeslots
@@ -54,7 +54,7 @@ with open('_data/12b.csv', newline='') as data:
 # 	plt.bar(range(1,65), leaving)
 # 	plt.show()
 
-with open('_data/lambdas12b.csv', 'w', newline='') as csvfile:
+with open('_data/lambdas12a.csv', 'w', newline='') as csvfile:
 	writer = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 	writer.writerow(range(9))
 	for timeslot in range(64):
