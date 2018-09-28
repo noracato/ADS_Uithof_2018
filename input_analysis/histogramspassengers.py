@@ -5,7 +5,7 @@ import math
 # import matplotlib.mlab as mlab
 # import scipy.stats as stats 
 
-with open('_data/12a.csv', newline='') as data:
+with open('_data/12a_progn_adjusted_punt.csv', newline='') as data:
 	reader = csv.reader(data, delimiter=';')
 
 	# from 6 to 22 every 15 min = 16*4 = 64 timeslots
