@@ -1,6 +1,4 @@
 import org.apache.commons.math3.distribution.GammaDistribution;
-import org.apache.commons.math3.distribution.ExponentialDistribution;
-
 
 class TramStop{
 	int id;
@@ -8,6 +6,7 @@ class TramStop{
 	Queue<Event> queueTram = new LinkedList<Event>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
 	double timeLastArrivalPassenger = 0;
+	double maxWaitingTime=0;
 	double[] lambdaArr = new double[64];
 	double[] lambdaDep = new double[64];
  	Random rand = new Random(); 
@@ -17,31 +16,42 @@ class TramStop{
 		this.lambdaArr = lambdaArr;
 		this.lambdaDep = lambdaDep;
 	}
-	public Event estimateDeparture(Event event){
+	public Departure planDeparture(Event event){
 		if (!this.idle){
 			queueTram.add(event);
 			//return NULL if event in queue
 		}
 		else {
 			this.idle = false;
-			double scale=0.4*(12.5+0.22*passIn+0.13*passOut)
-			//to do: trammetje met #passengers
-			double sample = new GammaDistribution(2, scale).sample();
-			// return estimated departure time
+			queuePassengers.add(generatePassengers(lambdaArr, event.timeEvent));
+			maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
+
+			double numPassengers = event.tram.getNumPassengers();
+			double passOut = Math.min(generatePassengers(lambdaDep, event.timeEvent).size()-1,numPassengers);
+			//!! to do: stappen nu alle passagiers uit?
+			double passIn = Math.min(queuePassengers.size()-1, 420-numPassengers+passOut);
+			double dwellTime = new GammaDistribution(2, 0.4*(12.5+0.22*passIn+0.13*passOut)).sample();
+			for (int i=0;i<passIn;i++){
+				queuePassengers.remove();
+			}
+			//to do: extra instappers toevoegen
+			event.tram.addPassengers(passIn-passOut);
+			return new Departure(event.timeEvent+dwellTime,event.tram,id);
 		}
 	}
 	public void makeAvailable(){
 		this.idle = true;
 	}
-	private void generatePassengers(double timeEvent){
-		currArrival=timeLastArrivalPassenger;
-		while (currArrival<timeEvent){
-			int hour = floor(currDeparture);
+	private LinkedList<Double> generatePassengers(double[] lambda, double to){
+		double currArrival=timeLastArrivalPassenger;
+		Queue<Double> currQueue = new LinkedList<Double>();
+		while (currArrival<to){
+			int hour = floor(currArrival);
 			int timeSlot = (hour - 6) * 4 + floor((currArrival-hour)/0.15);
-			double currArrival = getNextPassenger(lambdaArr[timeSlot])+currArrival;
-			queuePassengers.add(currArrival);
+			currArrival = getNextPassenger(lambda[timeSlot])+currArrival;
+			currQueue.add(currArrival);
 		}
-		timeLastArrivalPassenger = currArrival;
+		return currQueue;
 		//to do: instappers na timeEvent
 	}
 	 private double getNextPassenger(double lambda) {
@@ -49,3 +59,19 @@ class TramStop{
 	}
 }
 
+class Tram{
+	double[] scheduledArr = new double[16]; //assuming one trip is a round-trip starting from Uithof
+	int numPassengers;
+	int location = 0;
+	public Tram(double[] scheduledArr, int numPassengers){
+		this.scheduledArr = scheduledArr;
+		this.numPassengers = numPassengers;
+	}
+	public void addPassengers(int numPassengers)
+	{
+		this.numPassengers += numPassengers;
+	}
+	public int getNumPassengers(){
+		return this.numPassengers;
+	}
+}
