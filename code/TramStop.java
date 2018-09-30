@@ -5,7 +5,6 @@ class TramStop{
 	private boolean idle = true;
 	Queue<Event> queueTram = new LinkedList<Event>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastArrivalPassenger = 0;
 	double maxWaitingTime=0;
 	double[] lambdaArr = new double[64];
 	double[] lambdaDep = new double[64];
@@ -36,14 +35,18 @@ class TramStop{
 			}
 			//to do: extra instappers toevoegen
 			event.tram.addPassengers(passIn-passOut);
-			return new Departure(event.timeEvent+dwellTime,event.tram,id);
+			//to do: wachten trams als ze vooruit lopen op schema??
+			return new Departure(Math.max(event.timeEvent+dwellTime,event.tram.schedule[id]),event.tram,id);
 		}
 	}
 	public void makeAvailable(){
-		this.idle = true;
+		if (!queueTram.isEmpty()){
+			planDeparture(queueTram.poll());
+		}
+		else this.idle = true;
 	}
 	private LinkedList<Double> generatePassengers(double[] lambda, double to){
-		double currArrival=timeLastArrivalPassenger;
+		double currArrival=queuePassengers.peek().timeEvent;
 		Queue<Double> currQueue = new LinkedList<Double>();
 		while (currArrival<to){
 			int hour = floor(currArrival);
@@ -60,7 +63,7 @@ class TramStop{
 }
 
 class Tram{
-	double[] scheduledArr = new double[16]; //assuming one trip is a round-trip starting from Uithof
+	double[] schedule = new double[16]; //assuming one trip is a round-trip starting from Uithof
 	int numPassengers;
 	int location = 0;
 	public Tram(double[] scheduledArr, int numPassengers){
