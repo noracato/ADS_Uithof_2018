@@ -1,7 +1,4 @@
-import java.util.Random;
 import java.util.PriorityQueue;
-import java.util.LinkedList; 
-import java.util.Queue; 
 
 public class Main{
 	public static void main(String[] args){
@@ -12,10 +9,11 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-
+	double time = 0;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(s+1, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
-
+	TramStop[] tramstops = new TramStop[12];
+	Event
 	public void run(){
 
 
