@@ -85,7 +85,8 @@ class DistributionVariables{
 
                 for (int i=0;i<64;i++){lambdaArr[i] = Double.parseDouble(timeslotN[i+1]);}
                 for (int i=0;i<64;i++){probDep[i] = Double.parseDouble(timeslotN[i+65]);}
-                tramstops[n] = new TramStop(n,lambdaArr,probDep);
+                //to do mu's importeren
+                tramstops[n] = new TramStop(n,lambdaArr,probDep,3);
               	n++;
 
             }
