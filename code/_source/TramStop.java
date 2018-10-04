@@ -1,5 +1,6 @@
 import org.apache.commons.math3.distribution.GammaDistribution;
 import org.apache.commons.math3.distribution.BinomialDistribution;
+import org.apache.commons.math3.distribution.LogNormalDistribution;
 import java.util.Random;
 import java.util.LinkedList; 
 import java.util.Queue; 
@@ -15,16 +16,19 @@ class TramStop{
 	double[] lambdaArr = new double[64];
 	double[] lambdaDep = new double[64];
  	Random rand = new Random(); 
+ 	LogNormalDistribution runtimeDist;
 
-	public TramStop(int id, double[] lambdaArr, double[] lambdaDep){
+	public TramStop(int id, double[] lambdaArr, double[] lambdaDep, double runtimeMu){
 		this.id = id;
 		this.lambdaArr = lambdaArr;
 		this.lambdaDep = lambdaDep;
+		//to do: aanpassen runtimeVar
+		this.runtimeDists  = new LogNormalDistribution(runtimeMu, 1/runtimeMu);
 	}
 	public Departure planDeparture(Event event, double timeEvent){
 		if (!this.idle){
 			queueTram.add(event);
-			//return NULL if event in queue
+			return null;
 		}
 		else {
 			this.idle = false;
@@ -46,11 +50,17 @@ class TramStop{
 			return new Departure(Math.max(timeEvent+dwellTime,event.tram.scheduledArr[id]),event.tram,id);
 		}
 	}
-	public void makeAvailable(double timeEvent){
+	public Arrival planArrival(double timeEvent, Tram tram){
+		double runtime = 
+		return new Arrival(timeEvent, tram);
+	}
 		if (!queueTram.isEmpty()){
 			planDeparture(queueTram.poll(), timeEvent);
 		}
-		else this.idle = true;
+		else {
+		this.idle = true;
+			
+		}
 	}
 	private void generatePassengers(double to){
 		double currArrival=timeLastPassengerArrival;

@@ -42,7 +42,7 @@ class UithoflijnSim{
 			//to do: makeAvailable laten returnen
 			int currTramstop = nextEvent.getLocation();
 			Arrival nextArrival = tramstops[currTramstop].makeAvailable();
-			if ()
+			
 		}
 		else {
 			Departure departure = tramstops[nextEvent.getLocation()].planDeparture();
