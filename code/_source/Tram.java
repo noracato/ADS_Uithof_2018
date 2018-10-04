@@ -13,4 +13,7 @@ public class Tram {
 	public int getNumPassengers(){
 		return this.numPassengers;
 	}
+	public int getLocation(){
+		return location;
+	}
 }

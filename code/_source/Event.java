@@ -8,4 +8,7 @@ public abstract class Event{
 	public double getTime(){
 		return timeEvent;
 	}
+	public int getLocation(){
+		return tram.getLocation();
+	}
 }
