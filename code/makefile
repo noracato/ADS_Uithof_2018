@@ -10,7 +10,7 @@ CLASSES = \
 		_source/Event.java \
 		_source/TramStop.java \
 		_source/Statistics.java \
-		Main.java 
+		_source/Main.java 
 
 default: classes
 
