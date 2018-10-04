@@ -26,7 +26,7 @@ class UithoflijnSim{
 	double time = 6.05;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
-	TramStop[] tramstops = DistributionVariables.getTramStops("../../input_analysis/_data/inleesbestand_punt.csv");
+	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
 	
 
 	public void run(){

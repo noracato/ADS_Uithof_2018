@@ -28,7 +28,7 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 run: classes
-	$(JVM) -cp $(CL) Main
+	java -cp $(CL) Main
 
 clean:
 		$(RM) bin/*.class
