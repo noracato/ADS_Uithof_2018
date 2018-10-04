@@ -23,7 +23,7 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 6.05;
+	double time = 1;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
@@ -32,32 +32,32 @@ class UithoflijnSim{
 	public void run(){
         Tram tram1 = new Tram();
         eventList.add(new Arrival(time,tram1));
+
 		//to do: aanmaken trams en arrivals
-		while (time<1000){
+		while (time<960){
 			tick();
 		}
 	}
 	private void tick(){
 		Event nextEvent = eventList.poll();
+        int id = nextEvent.getLocation();
         time = nextEvent.timeEvent;
-        TramStop currTramstop = tramstops[nextEvent.getLocation()];
-
 
 		if (nextEvent instanceof Departure){
-            System.out.println("departure at: "+currTramstop.id+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-			eventList.add(currTramstop.planArrival(time, nextEvent.tram));
+            System.out.println("departure at: "+id+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+			eventList.add(tramstops[id].planArrival(time, nextEvent.tram));
 
-            Event nextTram = currTramstop.nextTramInQueue();
+            Event nextTram = tramstops[id].nextTramInQueue();
             if (nextTram!=null){
-                System.out.println("DELAYED arrival at: "+currTramstop.id+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-                eventList.add(currTramstop.planDeparture(nextTram,time+(double)2/3));
+                System.out.println("DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+                eventList.add(tramstops[id].planDeparture(nextTram,time+(double)2/3));
             }
 			
 		}
 		else {
             //to do: is dit altijd 40sec+ na departure vorige tram
-            System.out.println("arrival at: "+currTramstop.id+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-			Departure departure = currTramstop.planDeparture(nextEvent,time);
+            System.out.println("arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+			Departure departure = tramstops[id+1].planDeparture(nextEvent,time);
             eventList.add(departure);
 
 		}
@@ -94,10 +94,10 @@ class DistributionVariables{
                 double[] lambdaArr =new double[64];
                 double[] probDep =new double[64];
 
-                for (int i=0;i<64;i++){lambdaArr[i] = 4 *Double.parseDouble(timeslotN[i+1]);}
+                for (int i=0;i<64;i++){lambdaArr[i] = Double.parseDouble(timeslotN[i+1])/15;}
                 for (int i=0;i<64;i++){probDep[i] = Double.parseDouble(timeslotN[i+65]);}
                 //to do mu's importeren
-                tramstops[n] = new TramStop(n,lambdaArr,probDep,0.03);
+                tramstops[n] = new TramStop(n,lambdaArr,probDep,0.3);
               	n++;
 
             }
