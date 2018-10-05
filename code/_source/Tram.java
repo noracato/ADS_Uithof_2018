@@ -2,8 +2,9 @@ public class Tram {
 	//double[] scheduledArr = new double[16]; //assuming one trip is a round-trip starting from Uithof
 	int numPassengers = 0;
 	int location = -1;
-	public Tram(){
-		//this.scheduledArr = scheduledArr;
+	int id;
+	public Tram(int id){
+		this.id=id;
 	}
 	public void addPassengers(int numPassengers)
 	{
