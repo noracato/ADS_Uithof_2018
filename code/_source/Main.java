@@ -49,19 +49,19 @@ class UithoflijnSim{
 		if (nextEvent instanceof Departure){
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram.id);
-            Arrival nextArrival = tramstops[id+1].planArrival(time, tram);
+            Arrival nextArrival = tramstops[(id+1) % 12].planArrival(time, tram);
             if (nextArrival!=null) {eventList.add(nextArrival);}
 
-            Tram nextTram = tramstops[id].nextTramInQueue();
+            Tram nextTram = tramstops[id % 12].nextTramInQueue();
             if (nextTram!=null){
                 System.out.println("TRAM: "+nextTram.id+"DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                eventList.add(tramstops[id].planDeparture(nextTram,time+(double)2/3));
+                eventList.add(tramstops[id % 12].planDeparture(nextTram,time+(double)2/3));
             }
 			
 		}
 		else {
             System.out.println("TRAM: "+tram.id+"arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-			Departure departure = tramstops[id+1].planDeparture(tram,time);
+			Departure departure = tramstops[(id+1) %12].planDeparture(tram,time);
             eventList.add(departure);
 
 		}
@@ -94,7 +94,6 @@ class DistributionVariables{
 
                 timeslotN = line.split(csvSplitBy);
 
-                // do something with reversed order
                 double[] lambdaArr =new double[64];
                 double[] probDep =new double[64];
 
@@ -104,7 +103,6 @@ class DistributionVariables{
                 double varRuntime = Double.parseDouble(timeslotN[130]);
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
-                //to do mu's importeren
                 if (n==0 || n==6){
                     tramstops[n] = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);
                 }

@@ -49,18 +49,24 @@ class TramStop{
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
-		if (!this.idle){
-			queueTram.add(tram);
-			System.out.println("in de rij: tram "+tram.id);
-			return null;
-		}
-		else this.idle = false;
-		//to do: shift arrival vars
+		if (!this.serverIdle(tram)) return null;
+
 		double runtime = runtimeDist.sample();
 		runtime = Math.max(runtime, runtimeMin);
 		System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
 
 		return new Arrival(timeEvent+runtime, tram);
+	}
+	public boolean serverIdle(Tram tram){
+		if (!this.idle){
+			queueTram.add(tram);
+			System.out.println("in de rij: tram "+tram.id);
+			return false;
+		}
+		else {
+			this.idle = false;
+			return true;
+		}
 	}
 	public Tram nextTramInQueue(){
 		return queueTram.poll();
