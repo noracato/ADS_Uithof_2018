@@ -24,7 +24,6 @@ class TramStop{
 		this.lambdaArr = lambdaArr;
 		this.probDep = probDep;
 		this.runtimeMin = runtimeMin;
-		//to do: aanpassen runtimeVar
 		this.runtimeDist  = new LogNormalDistribution(runtimeMu, runtimeVar);
 	}
 	public Departure planDeparture(Tram tram, double timeEvent){
@@ -53,7 +52,7 @@ class TramStop{
 
 		double runtime = runtimeDist.sample();
 		runtime = Math.max(runtime, runtimeMin);
-		System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
+		//System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
 
 		return new Arrival(timeEvent+runtime, tram);
 	}

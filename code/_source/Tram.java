@@ -3,8 +3,10 @@ public class Tram {
 	int numPassengers = 0;
 	int location = -1;
 	int id;
-	public Tram(int id){
+	double[] scheduledDep;
+	public Tram(int id, double[] scheduledDep){
 		this.id=id;
+		this.scheduledDep = scheduledDep;
 	}
 	public void addPassengers(int numPassengers)
 	{

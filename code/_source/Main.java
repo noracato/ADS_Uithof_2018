@@ -23,20 +23,24 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 120;
+	double time = 0;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
-	
+	Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
+
 
 	public void run(){
-        Tram tram1 = new Tram(1);
-        eventList.add(new Arrival(time,tram1));
-        Tram tram2 = new Tram(2);
-        eventList.add(new Arrival(time+1,tram2));
+        // Tram tram1 = new Tram(1);
+        // eventList.add(new Arrival(time,tram1));
+        // Tram tram2 = new Tram(2);
+        // eventList.add(new Arrival(time+1,tram2));
+        for (Arrival arrival : arrivals){
+            eventList.add(arrival);
+        }
 
 		//to do: aanmaken trams en arrivals
-		while (time<960){
+		while (time<60){
 			tick();
 		}
 	}
@@ -60,7 +64,7 @@ class UithoflijnSim{
 			
 		}
 		else {
-            System.out.println("TRAM: "+tram.id+"arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+            System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
 			Departure departure = tramstops[(id+1) %12].planDeparture(tram,time);
             eventList.add(departure);
 
@@ -72,14 +76,15 @@ class UithoflijnSim{
 
 }
 
-class DistributionVariables{	
+class DistributionVariables{
+
 
 	public static TramStop[] getTramStops(String fileName) {
 		TramStop[] tramstops = new TramStop[12];
         String csvFile = fileName;
         BufferedReader br = null;
         String line = "";
-        String csvSplitBy = ";";
+        String csvSplitBy = ";";    
 
         try {
 
@@ -131,4 +136,50 @@ class DistributionVariables{
         // }
         return tramstops;
     }
+    public static Arrival[] getTrams(String fileName) {
+        Arrival[] scheduledArr = new Arrival[103];
+        String csvFile = fileName;
+        BufferedReader br = null;
+        String line = "";
+        String csvSplitBy = ";";    
+
+        try {
+
+            br = new BufferedReader(new FileReader(csvFile));
+
+            br.readLine();
+            br.readLine();
+
+            
+            int n = 0;
+            String[] departures;
+
+            while ((line = br.readLine()) != null) {
+
+                departures = line.split(csvSplitBy);
+
+                double[] scheduledDep =new double[12];
+
+                for (int i=0;i<12;i++){scheduledDep[i] = Double.parseDouble(departures[i]);}
+                scheduledArr[n]= new Arrival(scheduledDep[0], new Tram(n, scheduledDep));
+                n++;
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return scheduledArr;        
+    }
+
+
 }
