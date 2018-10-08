@@ -4,30 +4,24 @@ public class Eindhalte extends TramStop{
 		super(id,lambdaArr,probDep,runtimeMu,runtimeVar,runtimeMin);
 	}
 	@Override
-	public Arrival planArrival(double timeEvent, Tram tram){
-		int idleServer = this.isIdle();
-		if (idleServer<0){
-			queueTram.add(tram);
-			System.out.println("in de rij: tram "+tram.id);
-			return null;
+	public boolean serverIdle(Tram tram){
+		for (int i=0;i<2;i++){
+			if (platform[i]==null ) { 
+				platform[i]=tram;
+				return true; 			
+			}
 		}
-		else this.platform[idleServer] = tram;
-		// to do: geen trams aankomen tijdens switch
-
-		double runtime = runtimeDist.sample();
-		runtime = Math.max(runtime, runtimeMin);
-		System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
-
-		return new Arrival(timeEvent+runtime, tram);
-	}
-	private int isIdle(){
-		if (platform[0]==null ) return 0;
-		else if (platform[1]==null){ return 1;}
-		else {return -1;}
+		queueTram.add(tram);
+		System.out.println("in de rij: tram "+tram.id);
+		return false;		
 	}
 	@Override
 	public void setIdle(int tramId){
-		if (platform[0]!=null && platform[0].id==tramId){ platform[0]=null;}
-		else {platform[1]=null;}
+		if (platform[0]!=null && platform[0].id==tramId){ 
+			platform[0]=null;
+		}
+		else { 
+			platform[1] = null; 
+		}
 	}
 }
