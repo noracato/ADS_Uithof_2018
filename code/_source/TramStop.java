@@ -36,7 +36,7 @@ class TramStop{
 			int timeSlot = timeSlot(timeEvent);
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
 			int passIn = Math.min(queuePassengers.size()-1, 420-numPassengers+passOut);
-			double dwellTime = new GammaDistribution(2, 0.4*(12.5+0.22*passIn+0.13*passOut)).sample()/60;
+			double dwellTime = dwellTime(passIn, passOut);
 			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+" QUEUE: "+(queuePassengers.size()-1));
 			for (int i=0;i<passIn;i++){
 				queuePassengers.remove();
@@ -44,7 +44,8 @@ class TramStop{
 			//to do: extra instappers toevoegen
 			tram.addPassengers(passIn-passOut);
 			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
-			return new Departure(timeEvent+dwellTime,tram,id);
+			double extraTime = waitForDeparture(tram);
+			return new Departure(timeEvent+dwellTime+extraTime,tram,id);
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
@@ -53,8 +54,8 @@ class TramStop{
 		double runtime = runtimeDist.sample();
 		runtime = Math.max(runtime, runtimeMin);
 		//System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
-
-		return new Arrival(timeEvent+runtime, tram);
+		double extraTime = waitForArrival(tram);
+		return new Arrival(timeEvent+runtime+extraTime, tram);
 	}
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
@@ -82,6 +83,19 @@ class TramStop{
 	}
 	 private double getNextPassenger(double lambda) {
     	return  Math.log(1-rand.nextDouble())/(-lambda);
+	}
+
+	public double dwellTime(int passIn, int passOut){
+		return new GammaDistribution(2, 0.4*(12.5+0.22*passIn+0.13*passOut)).sample()/60;
+	}
+
+	// to do: dienstregeling toevoegen <- maaike
+	public double waitForDeparture(Tram tram){
+		return 0.0;
+	}
+
+	public double waitForArrival(Tram tram){
+		return 0.0;
 	}
 
 	// in minuten

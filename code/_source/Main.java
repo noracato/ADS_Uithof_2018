@@ -58,7 +58,7 @@ class UithoflijnSim{
 
             Tram nextTram = tramstops[id % 12].nextTramInQueue();
             if (nextTram!=null){
-                System.out.println("TRAM: "+nextTram.id+"DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
+                System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
                 eventList.add(tramstops[id % 12].planDeparture(nextTram,time+(double)2/3));
             }
 			
@@ -109,7 +109,7 @@ class DistributionVariables{
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
                 if (n==0 || n==6){
-                    tramstops[n] = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);
+                    tramstops[n] = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, 5);
                 }
                 else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);}
               	n++;
@@ -137,6 +137,7 @@ class DistributionVariables{
         return tramstops;
     }
     public static Arrival[] getTrams(String fileName) {
+        // dit niet zelf generen op basis van q, spitsFreq en dalFreq?
         Arrival[] scheduledArr = new Arrival[103];
         String csvFile = fileName;
         BufferedReader br = null;
