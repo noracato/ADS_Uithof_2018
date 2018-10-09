@@ -23,28 +23,31 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 150;
+	double time = 0;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
-	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
+	Switch[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
 	Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
 
 
 	public void run(){
         Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
         eventList.add(new Arrival(time,tram1));
-        Tram tram2 = new Tram(2, arrivals[1].tram.scheduledDep);
-        eventList.add(new Arrival(time+14,tram2));
+
+        // Tram tram2 = new Tram(2, arrivals[1].tram.scheduledDep);
+        // eventList.add(new Arrival(time+14,tram2));
         // for (Arrival arrival : arrivals){
         //     eventList.add(arrival);
         // }
 
 		//to do: aanmaken trams en arrivals
-		while (time<170){
+		while (time<180){
 			tick();
 		}
-        for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+", max waitingtime: "+tramstop.totPassengers);
+        for (Switch tramstop : tramstops){
+            if (tramstop instanceof TramStop){
+                System.out.println("tramstop: "+tramstop.id+", max waitingtime: "+((TramStop)tramstop).totPassengers);
+            }
         }
 	}
 	private void tick(){
@@ -56,19 +59,19 @@ class UithoflijnSim{
 		if (nextEvent instanceof Departure){
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram.id);
-            Arrival nextArrival = tramstops[(id+1) % 12].planArrival(time, tram);
+            Arrival nextArrival = tramstops[(id+1) % 16].planArrival(time, tram);
             if (nextArrival!=null) {eventList.add(nextArrival);}
 
-            Tram nextTram = tramstops[id % 12].nextTramInQueue();
+            Tram nextTram = tramstops[id % 16].nextTramInQueue();
             if (nextTram!=null){
                 System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                eventList.add(tramstops[id % 12].planDeparture(nextTram,time+(double)2/3));
+                eventList.add(tramstops[id % 16].planDeparture(nextTram,time+(double)2/3));
             }
 			
 		}
 		else {
             System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-			Departure departure = tramstops[(id+1) %12].planDeparture(tram,time);
+			Departure departure = tramstops[(id+1) %16].planDeparture(tram,time);
             eventList.add(departure);
 
 		}
@@ -77,13 +80,14 @@ class UithoflijnSim{
 
 
 
+
 }
 
 class DistributionVariables{
 
 
-	public static TramStop[] getTramStops(String fileName) {
-		TramStop[] tramstops = new TramStop[12];
+	public static Switch[] getTramStops(String fileName) {
+		Switch[] tramstops = new Switch[16];
         String csvFile = fileName;
         BufferedReader br = null;
         String line = "";
@@ -112,9 +116,14 @@ class DistributionVariables{
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
                 if (n==0 || n==6){
-                    tramstops[n] = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, 5);
+                    Switch sw = new Switch(n,muRuntime, varRuntime, minRuntime);
+                    tramstops[n] = sw;
+                    n++;
+                    tramstops[n] = new Eindhalte(n,0, 10, 0, lambdaArr,probDep,5);
+                    n++;
+                    tramstops[n] = sw;
                 }
-                else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);}
+                else {tramstops[n] = new TramStop(n,muRuntime, varRuntime, minRuntime, lambdaArr,probDep);}
               	n++;
 
             }

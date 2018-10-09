@@ -19,6 +19,7 @@ CLASSES = \
 		_source/Event.java \
 		_source/Arrival.java \
 		_source/Departure.java \
+		_source/Switch.java \
 		_source/TramStop.java \
 		_source/Eindhalte.java \
 		_source/Statistics.java \
