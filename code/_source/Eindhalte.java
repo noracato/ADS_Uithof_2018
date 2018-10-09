@@ -39,28 +39,4 @@ public class Eindhalte extends TramStop{
 		return q;
 	}
 
-	// check if on switch
-	@Override
-	public double waitForDeparture(Tram tram){
-		double extra = 0.0;
-		// check if tram is on 'bad' platform
-		if (platform[1]!=null && platform[1].id==tramId){
-			if(!switchIdle){extra = 1.0;}
-			// te vroeg?
-			else{switchIdle = false;}
-		}
-		return extra;
-	}
-
-	// to do: hoe weten we om welke tijd hij hier is? een lijst bijhouden voor op welke tijden hij bezet is?
-	// en wie heeft er voorrang?
-	@Override
-	public double waitForArrival(Tram tram){
-		double extra = 0.0;
-		// check if tram is on 'bad' platform
-		if (platform[0]!=null && platform[0].id==tramId){
-			if(!switchIdle){extra = 1.0;}
-		}
-		return extra;
-	}
 }

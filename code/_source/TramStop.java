@@ -49,8 +49,7 @@ class TramStop{
 			//to do: extra instappers toevoegen
 			tram.addPassengers(passIn-passOut);
 			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
-			double extraTime = waitForDeparture(tram);
-			return new Departure(timeEvent+dwellTime+extraTime,tram,id);
+			return new Departure(timeEvent+dwellTime,tram,id);
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
@@ -59,8 +58,7 @@ class TramStop{
 		double runtime = runtimeDist.sample();
 		runtime = Math.max(runtime, runtimeMin);
 		//System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
-		double extraTime = waitForArrival(tram);
-		return new Arrival(timeEvent+runtime+extraTime, tram);
+		return new Arrival(timeEvent+runtime, tram);
 	}
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
@@ -98,15 +96,6 @@ class TramStop{
 
 	public double dwellTime(int passIn, int passOut){
 		return new GammaDistribution(2, 0.4*(12.5+0.22*passIn+0.13*passOut)).sample()/60;
-	}
-
-	// to do: dienstregeling toevoegen <- maaike
-	public double waitForDeparture(Tram tram){
-		return 0.0;
-	}
-
-	public double waitForArrival(Tram tram){
-		return 0.0;
 	}
 
 	// in minuten
