@@ -7,17 +7,18 @@ import java.util.Queue;
 import java.lang.Math;
 
 class TramStop{
-	int id;
+	public int id;
 	private boolean idle = true;
 	Queue<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastPassengerArrival = 6;
-	double maxWaitingTime=0;
+	double timeLastPassengerArrival = 150;
+	public double maxWaitingTime=0;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
  	Random rand = new Random(); 
  	LogNormalDistribution runtimeDist;
  	double runtimeMin;
+ 	public double totPassengers;
 
 	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
 		this.id = id;
@@ -30,17 +31,21 @@ class TramStop{
 			tram.setLocation(id);
 
 			this.generatePassengers(timeEvent);
-			maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
 
 			int numPassengers = tram.getNumPassengers();
 			int timeSlot = timeSlot(timeEvent);
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
-			int passIn = Math.min(queuePassengers.size()-1, 420-numPassengers+passOut);
+			int passIn = 0;
+			if (!queuePassengers.isEmpty()){
+				maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
+				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
+			}
 			double dwellTime = new GammaDistribution(2, 0.4*(12.5+0.22*passIn+0.13*passOut)).sample()/60;
-			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+" QUEUE: "+(queuePassengers.size()-1));
+			//System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+" QUEUE: "+(queuePassengers.size()-1));
 			for (int i=0;i<passIn;i++){
 				queuePassengers.remove();
 			}
+
 			//to do: extra instappers toevoegen
 			tram.addPassengers(passIn-passOut);
 			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
@@ -72,16 +77,22 @@ class TramStop{
 	} 	
 	private void generatePassengers(double to){
 		double currArrival=timeLastPassengerArrival;
-
 		while (currArrival<to){
-			currArrival = getNextPassenger(lambdaArr[timeSlot(currArrival)])+currArrival;
-			queuePassengers.add(currArrival);
+			double nextArrival = getNextPassenger(currArrival);
+
+			if (timeSlot(currArrival)==timeSlot(nextArrival)){
+				currArrival = nextArrival;
+				queuePassengers.add(currArrival);
+				totPassengers++;
+			}
+			else {
+				currArrival = (timeSlot(currArrival)+1)*15;
+			}
 		}
-		timeLastPassengerArrival = currArrival;
-		//to do: instappers na timeEvent
+		timeLastPassengerArrival = to;
 	}
-	 private double getNextPassenger(double lambda) {
-    	return  Math.log(1-rand.nextDouble())/(-lambda);
+	 private double getNextPassenger(double time) {
+    	return  Math.log(1-rand.nextDouble())/(-lambdaArr[timeSlot(time)])+ time;
 	}
 
 	// in minuten
