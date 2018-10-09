@@ -2,12 +2,21 @@ public class Eindhalte extends TramStop{
 	// 0 is 'goed' spoor, 1 is 'slecht' spoor
 	private Tram[] platform = new Tram[2];
 	private Tram switchIdle;
-	// private Switch tramSwitch = new Switch();
+	private Switch tramSwitch;
 	private int q;
 	// extra argument q turnaround time
 	public Eindhalte (int id, double runtimeMu, double runtimeVar, double runtimeMin, double[] lambdaArr, double[] probDep, int q){
 		super(id,runtimeMu,runtimeVar,runtimeMin,lambdaArr,probDep);
 		this.q=q;
+		tramSwitch = new Switch(id,runtimeMu,runtimeVar,runtimeMin);
+	}
+	@Override
+	public Departure planDeparture(Tram tram, double timeEvent){
+		//return tramSwitch.planDeparture();
+	}
+	@Override
+	public Arrival planArrival(double timeEvent, Tram tram){
+		
 	}
 
 	//when going onto platform
