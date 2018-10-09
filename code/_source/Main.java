@@ -23,7 +23,7 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 0;
+	double time = 150;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
@@ -31,18 +31,21 @@ class UithoflijnSim{
 
 
 	public void run(){
-        // Tram tram1 = new Tram(1);
-        // eventList.add(new Arrival(time,tram1));
-        // Tram tram2 = new Tram(2);
-        // eventList.add(new Arrival(time+1,tram2));
-        for (Arrival arrival : arrivals){
-            eventList.add(arrival);
-        }
+        Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
+        eventList.add(new Arrival(time,tram1));
+        Tram tram2 = new Tram(2, arrivals[1].tram.scheduledDep);
+        eventList.add(new Arrival(time+14,tram2));
+        // for (Arrival arrival : arrivals){
+        //     eventList.add(arrival);
+        // }
 
 		//to do: aanmaken trams en arrivals
-		while (time<60){
+		while (time<170){
 			tick();
 		}
+        for (TramStop tramstop : tramstops){
+            System.out.println("tramstop: "+tramstop.id+", max waitingtime: "+tramstop.totPassengers);
+        }
 	}
 	private void tick(){
 		Event nextEvent = eventList.poll();
