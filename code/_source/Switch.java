@@ -14,6 +14,9 @@ public class Switch{
 		this.runtimeDist  = new LogNormalDistribution(runtimeMu, runtimeVar);
 	}
 	public Departure planDeparture(Tram tram, double timeEvent){
+			if (tram.getLocation()==(id-1) %16){//dan komt ie vanaf het spoor
+				
+			}
 			tram.setLocation(id);
 
 			//to do: veranderen
