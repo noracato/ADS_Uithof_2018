@@ -12,7 +12,7 @@ class TramStop{
 	public boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastPassengerArrival = 150;
+	double timeLastPassengerArrival = 0;
 	public double maxWaitingTime=0;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
