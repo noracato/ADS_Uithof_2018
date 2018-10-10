@@ -11,11 +11,11 @@ public class Eindhalte extends TramStop{
 	//when going onto platform
 	@Override
 	public Departure planDeparture(Tram tram, double timeEvent){
-		tram.setLocation();
-
-		if (tram.getLocation()==id+1){//then tram departure on platform
+		
+		if (tram.getLocation()==id){//then tram departure on platform
 			super.planDeparture(tram, timeEvent);
 		}
+		else tram.setLocation();
 
 		//plan departure from switch
 		this.idle=false;
