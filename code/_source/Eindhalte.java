@@ -11,20 +11,20 @@ public class Eindhalte extends TramStop{
 	//when going onto platform
 	@Override
 	public Departure planDeparture(Tram tram, double timeEvent){
-		tram.setLocation();
 
-		if (tram.getLocation()==id+1){//then tram departure on platform
-			super.planDeparture(tram, timeEvent);
+		if (tram.getLocation()==id){//then tram departure on platform
+			return super.planDeparture(tram, timeEvent);
 		}
 
 		//plan departure from switch
+		tram.setLocation();
 		this.idle=false;
 		return new Departure(timeEvent+1,tram,id);
 	}
 	@Override
 	public Arrival planArrival(double timeEvent, Tram tram){
 		if (tram.getLocation()==(id-1)%16){//then new tram arrival
-			super.planArrival(timeEvent-1, tram);
+			return super.planArrival(timeEvent-1, tram);
 		}
 		if (tram.getLocation()==id+1 || this.idle){
 			return new Arrival(timeEvent,tram);

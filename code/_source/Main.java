@@ -23,7 +23,7 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 150;
+	double time = 0;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
@@ -40,7 +40,7 @@ class UithoflijnSim{
         // }
 
 		//to do: aanmaken trams en arrivals
-		while (time<170){
+		while (time<180){
 			tick();
 		}
         for (TramStop tramstop : tramstops){
