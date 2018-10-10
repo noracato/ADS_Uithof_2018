@@ -34,7 +34,9 @@ class UithoflijnSim{
         Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
         eventList.add(new Arrival(time,tram1));
         Tram tram2 = new Tram(2, arrivals[1].tram.scheduledDep);
-        eventList.add(new Arrival(time+14,tram2));
+        eventList.add(new Arrival(time+1,tram2));
+        Tram tram3 = new Tram(3, arrivals[2].tram.scheduledDep);
+        eventList.add(new Arrival(time+2,tram3));
         // for (Arrival arrival : arrivals){
         //     eventList.add(arrival);
         // }
@@ -62,7 +64,7 @@ class UithoflijnSim{
             Tram nextTram = tramstops[id % 16].nextTramInQueue();
             if (nextTram!=null){
                 System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                eventList.add(tramstops[id % 16].planDeparture(nextTram,time+(double)2/3));
+                eventList.add(tramstops[id % 16].planDeparture(nextTram,time));
             }
 			
 		}

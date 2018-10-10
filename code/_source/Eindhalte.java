@@ -36,14 +36,15 @@ public class Eindhalte extends TramStop{
 	//when going onto platform
 	@Override
 	public boolean serverIdle(Tram tram){
-		if (this.idle){
-			for (int i=0;i<2;i++){
-				if (platform[i]==null ) { 
-					platform[i]=tram;
-					return true; 			
-				}
+		for (int i=0;i<2;i++){
+			if (platform[i]==null ) {
+				System.out.println("reserved: platform "+i+", tramID: "+tram.id);
+				platform[i]=tram;
+				if (this.idle) return true;
+				break;			
 			}
-		}			
+		}
+				
 
 		queueTram.addLast(tram);
 		System.out.println("in de rij: tram "+tram.id);

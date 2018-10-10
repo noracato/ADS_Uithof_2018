@@ -29,6 +29,8 @@ class TramStop{
 		this.runtimeDist  = new LogNormalDistribution(runtimeMu, runtimeVar);
 	}
 	public Departure planDeparture(Tram tram, double timeEvent){
+			//in case tram has to wait for previous tram to depart
+			timeEvent=Math.max(timeLastPassengerArrival+(double)2/3,timeEvent);
 			tram.setLocation();
 
 			this.generatePassengers(timeEvent);
