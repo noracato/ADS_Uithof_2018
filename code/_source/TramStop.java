@@ -3,13 +3,14 @@ import org.apache.commons.math3.distribution.BinomialDistribution;
 import org.apache.commons.math3.distribution.LogNormalDistribution;
 import java.util.Random;
 import java.util.LinkedList; 
+import java.util.Deque;
 import java.util.Queue; 
 import java.lang.Math;
 
 class TramStop{
 	public int id;
-	private boolean idle = true;
-	Queue<Tram> queueTram = new LinkedList<Tram>();
+	public boolean idle = true;
+	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
 	double timeLastPassengerArrival = 150;
 	public double maxWaitingTime=0;
@@ -62,7 +63,7 @@ class TramStop{
 	}
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
-			queueTram.add(tram);
+			queueTram.addLast(tram);
 			System.out.println("in de rij: tram "+tram.id);
 			return false;
 		}
