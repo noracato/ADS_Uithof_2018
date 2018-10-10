@@ -55,20 +55,20 @@ class UithoflijnSim{
 
 		if (nextEvent instanceof Departure){
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
-            tramstops[id].setIdle(tram.id);
-            Arrival nextArrival = tramstops[(id+1) % 12].planArrival(time, tram);
+            tramstops[id].setIdle(tram);
+            Arrival nextArrival = tramstops[(id+1) % 16].planArrival(time, tram);
             if (nextArrival!=null) {eventList.add(nextArrival);}
 
-            Tram nextTram = tramstops[id % 12].nextTramInQueue();
+            Tram nextTram = tramstops[id % 16].nextTramInQueue();
             if (nextTram!=null){
                 System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                eventList.add(tramstops[id % 12].planDeparture(nextTram,time+(double)2/3));
+                eventList.add(tramstops[id % 16].planDeparture(nextTram,time+(double)2/3));
             }
 			
 		}
 		else {
             System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-			Departure departure = tramstops[(id+1) %12].planDeparture(tram,time);
+			Departure departure = tramstops[(id+1) %16].planDeparture(tram,time);
             eventList.add(departure);
 
 		}
@@ -83,7 +83,7 @@ class DistributionVariables{
 
 
 	public static TramStop[] getTramStops(String fileName) {
-		TramStop[] tramstops = new TramStop[12];
+		TramStop[] tramstops = new TramStop[16];
         String csvFile = fileName;
         BufferedReader br = null;
         String line = "";
@@ -111,8 +111,12 @@ class DistributionVariables{
                 double varRuntime = Double.parseDouble(timeslotN[130]);
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
-                if (n==0 || n==6){
-                    tramstops[n] = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, 5);
+                if (n==0 || n==8){
+                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, 5);
+                    tramstops[n] = eindhalte;
+                    tramstops[n+1] = eindhalte;
+                    tramstops[n+2] = eindhalte;
+                    n=n+2;
                 }
                 else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);}
               	n++;

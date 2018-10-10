@@ -29,7 +29,7 @@ class TramStop{
 		this.runtimeDist  = new LogNormalDistribution(runtimeMu, runtimeVar);
 	}
 	public Departure planDeparture(Tram tram, double timeEvent){
-			tram.setLocation(id);
+			tram.setLocation();
 
 			this.generatePassengers(timeEvent);
 
@@ -42,7 +42,7 @@ class TramStop{
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
-			//System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+" QUEUE: "+(queuePassengers.size()-1));
+			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+" QUEUE: "+queuePassengers.size());
 			for (int i=0;i<passIn;i++){
 				queuePassengers.remove();
 			}
@@ -103,7 +103,7 @@ class TramStop{
 	private int timeSlot(double timeEvent){
 		return (int)Math.floor(timeEvent/15);
 	}
-	public void setIdle(int tramId){
+	public void setIdle(Tram tram){
 		this.idle = true;
 	}
 }
