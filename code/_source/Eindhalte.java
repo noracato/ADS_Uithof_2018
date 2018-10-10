@@ -16,11 +16,14 @@ public class Eindhalte extends TramStop{
 		if (tram.getLocation()==id){//then tram departure on platform
 			return super.planDeparture(tram, timeEvent);
 		}
-		else tram.setLocation();
 
 		//plan departure from switch
 		tram.setLocation();
-		this.idle=false;
+		// if crossing over switch, set switch to false (else tram is going straight and nothing happens)
+		if ((tram.getLocation()==id+2 && platform[1]!= null && platform[1].id == tram.id) 
+				|| (tram.getLocation()==id) && platform[0]!=null && platform[0].id == tram.id){
+			this.idle=false;
+		}
 		return new Departure(timeEvent+1,tram,id);
 	}
 	@Override
@@ -32,6 +35,7 @@ public class Eindhalte extends TramStop{
 			return new Arrival(timeEvent,tram);
 		}
 		queueTram.addFirst(tram);
+		System.out.println("vooraan in de rij: tram "+tram.id);
 		return null;		
 	}
 
@@ -56,11 +60,11 @@ public class Eindhalte extends TramStop{
 	// when going off platform
 	@Override
 	public void setIdle(Tram tram){
-		if (tram.getLocation()==id+1) {
+		if (tram.getLocation()==id+2) {
 			if (platform[0]==tram) platform[0]=null;
 			else platform[1]=null;
 		}
-		else this.idle=true;
+		if (tram.getLocation()!=id+1) this.idle=true;
 	}
 	@Override
 	public double dwellTime(int passIn, int passOut){

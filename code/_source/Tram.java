@@ -20,5 +20,6 @@ public class Tram {
 	}
 	public void setLocation(){
 		this.location++;
+		if (location == 16) location = 0;
 	}
 }

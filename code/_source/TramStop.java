@@ -58,6 +58,7 @@ class TramStop{
 
 		double runtime = runtimeDist.sample();
 		runtime = Math.max(runtime, runtimeMin);
+		if (id == 4 || id == 9) runtime --; // after switch
 		//System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
 		return new Arrival(timeEvent+runtime, tram);
 	}
