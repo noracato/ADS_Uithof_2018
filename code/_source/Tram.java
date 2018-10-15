@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Tram {
 	// Time tram should leave at uithof(0) and cs(1)
-	ArrayList<Double> scheduledDepEnds;
+	double[] scheduledDepEnds;
 	int numPassengers = 0;
 	int location = 1;
 	int id;
@@ -12,7 +12,7 @@ public class Tram {
 // met de extra stops bovenste: 0, 0, 0, 2.1521, 3.771, 5.456, 6.775, 8.7604, 10.0625, 14.4313
 // onderste mist laaste twee: , 13.2083333333333,14.8125] // now faking shorter trip of 13.5 min
 
-	public Tram(int id, ArrayList<Double> scheduledDepEnds){
+	public Tram(int id, double[] scheduledDepEnds){
 		this.id=id;
 		this.scheduledDepEnds = scheduledDepEnds;
 	}
@@ -35,13 +35,13 @@ public class Tram {
 	public double schelduledDeparture(){
 		// When at endstation (9), change to new time // change this when adding more stops!!
 		if (location < 9){
-			return scheduledDepStops[location]+scheduledDepEnds.get(0);
+			return scheduledDepStops[location]+scheduledDepEnds[0];
 		}
-		return scheduledDepStops[location]+scheduledDepEnds.get(1);
+		return scheduledDepStops[location]+scheduledDepEnds[1];
 	}
 
 	// set a new schedule for the tram
-	public void setNewSchedule(ArrayList<Double> scheduledDepEnds){
+	public void setNewSchedule(double[] scheduledDepEnds){
 		this.scheduledDepEnds = scheduledDepEnds;
 	}
 }
