@@ -41,7 +41,7 @@ public class Eindhalte extends TramStop{
 	}
 	@Override
 	public Arrival planArrival(double timeEvent, Tram tram){
-		if (tram.getLocation()==(id-1)%16){//then new tram arrival
+		if (tram.getLocation()==(id-1)%20){//then new tram arrival
 			return super.planArrival(timeEvent-1, tram);
 		}
 		//otherwise instant arrival
@@ -49,7 +49,7 @@ public class Eindhalte extends TramStop{
 		
 	}
 	private boolean switchAvailable(Tram tram){
-		if ((tram.getLocation()==(id-1)%16 && platform[1]==tram && this.idle.getLocation()==id+2 && platform[0]==this.idle) ||
+		if ((tram.getLocation()==(id-1)%20 && platform[1]==tram && this.idle.getLocation()==id+2 && platform[0]==this.idle) ||
 			(tram.getLocation()==id+1 && platform[0]==tram && this.idle.getLocation()==id && platform[1]==this.idle)){
 			return true;
 		}

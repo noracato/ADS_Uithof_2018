@@ -30,7 +30,7 @@ class UithoflijnSim{
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-    Queue<double[]> schedules = DistributionVariables.schedule(5, 8, 4);
+    Queue<double[]> schedules = DistributionVariables.schedule(5, 8, 4, 4);
 
 	public void run(){
         // Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
@@ -199,41 +199,45 @@ class DistributionVariables{
     // }
 
     // freq is trams per hour
-    public static Queue<double[]> schedule(int q, int spitsFreq, int dalFreq){
+    public static Queue<double[]> schedule(int q, int spitsFreq, int dayFreq, int dalFreq){
         // int roundTrip = 34+2*q; // dit is dus die met alle stops
 
         // calc de gewenste between time
         double roundTrip = 27+2*q;
         double singleTrip = 13.5+q;
         double spitsBetweenTime = 60/spitsFreq;
+        double dayBetweenTime = 60/dayFreq;
         double dalBetweenTime = 60/dalFreq;
 
-        // kijk hoeveel trams je daarvoor moet inzetten
-        int dalTrams = (int)Math.ceil(roundTrip/dalBetweenTime);
-        int spitsTrams = (int)Math.ceil(roundTrip/spitsBetweenTime);
-        int extraTrams = spitsTrams-dalTrams;
-
-        // herbereken de between time op basis van aantal trams voor mooie spreiding
-        dalBetweenTime = 60/dalTrams;
-        spitsBetweenTime = 60/spitsTrams;
+        double dalExp = Math.ceil(roundTrip/dalBetweenTime);
+        dalBetweenTime -= (dalExp*dalBetweenTime - roundTrip)/dalExp;
+        double dayExp = Math.ceil(roundTrip/dayBetweenTime);
+        dayBetweenTime -= (dayExp*dayBetweenTime - roundTrip)/dayExp;
+        double spitsExp = Math.ceil(roundTrip/spitsBetweenTime);
+        spitsBetweenTime -= (spitsExp*spitsBetweenTime - roundTrip)/spitsExp;
+        
 
         // Een queue met op elke index-tijd een mini schedule voor de tram (p+r en cs)
         Queue<double[]> arrivaltimes = new LinkedList<double[]>();
        
         // eerste daluren, dit is nog erg onhandig.....
         double time=0;
-        // for(int i = 0; i < dalTrams; i++){
-            // time = dalBetweenTime*i;      
-            while(time<60){
-                double[] mytimes = new double[]{time, time+singleTrip};
-                arrivaltimes.add(mytimes);
-                time += roundTrip;
-            }
-        // }
-        System.out.println(arrivaltimes.peek());
+       
+        while(time<840){
+            double[] mytimes = new double[]{time, time+singleTrip};
+            arrivaltimes.add(mytimes);
+            if(time < 60) time += dalBetweenTime;
+            else if (time < 180) time += spitsBetweenTime;
+            else if (time < 600) time += dayBetweenTime;
+            else if (time < 720) time += spitsBetweenTime;
+            else time += dalBetweenTime;
+        }
 
 
-        System.out.println(spitsBetweenTime +" "+dalBetweenTime+" "+dalTrams+" "+spitsTrams);
+        System.out.println(arrivaltimes.peek()[0]);
+
+
+        System.out.println(spitsBetweenTime +" "+dalBetweenTime);
         return arrivaltimes;
     }
 
