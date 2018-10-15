@@ -66,19 +66,21 @@ class UithoflijnSim{
 		if (nextEvent instanceof Departure){
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram);
-            Arrival nextArrival = tramstops[(id+1) % 16].planArrival(time, tram);
+            Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
             eventList.add(nextArrival);
+            
+            
 
-            Tram nextTram = tramstops[id % 16].nextTramInQueue();
+            Tram nextTram = tramstops[id % 20].nextTramInQueue();
             if (nextTram!=null){
                 System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                eventList.add(tramstops[id % 16].planDeparture(nextTram,time));
+                eventList.add(tramstops[id % 20].planDeparture(nextTram,time));
             }
 			
 		}
 		else {
             System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-			Departure departure = tramstops[(id+1) %16].planDeparture(tram,time);
+			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
             if (departure!=null) eventList.add(departure);
 
 		}
@@ -93,7 +95,7 @@ class DistributionVariables{
 
 
 	public static TramStop[] getTramStops(String fileName) {
-		TramStop[] tramstops = new TramStop[16];
+		TramStop[] tramstops = new TramStop[20];
         String csvFile = fileName;
         BufferedReader br = null;
         String line = "";
@@ -121,7 +123,7 @@ class DistributionVariables{
                 double varRuntime = Double.parseDouble(timeslotN[130]);
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
-                if (n==0 || n==8){
+                if (n==0 || n==10){
                     Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, 5);
                     tramstops[n] = eindhalte;
                     tramstops[n+1] = eindhalte;

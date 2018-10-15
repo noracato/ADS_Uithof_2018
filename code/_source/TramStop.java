@@ -47,24 +47,20 @@ class TramStop{
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
-			
-			for (int i=0;i<passIn;i++){
-				queuePassengers.remove();
-			}
 
 			// extra passengers:
 			double expectedDeparture = timeEvent+dwellTime;
 			int passExtra = 0;
 			this.generatePassengers(expectedDeparture);
 			if (!queuePassengers.isEmpty()){
-				passExtra = Math.min(queuePassengers.size(), 420-numPassengers+passOut-passIn);
-				for (int i=0;i<passExtra;i++){
-					queuePassengers.remove();
-				}
+				passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);	
 				if (tram.getLocation() != 1 && tram.getLocation() != 9) expectedDeparture += dwellTime(passExtra, 0);
 			}
 
 			tram.addPassengers(passIn+passExtra-passOut);
+			for (int i=0;i<passIn+passExtra;i++){
+					queuePassengers.remove();
+				}
 			
 			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
