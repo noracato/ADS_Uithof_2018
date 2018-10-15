@@ -48,6 +48,10 @@ class TramStop{
 			}
 			double dwellTime = dwellTime(passIn, passOut);
 			
+			for (int i=0;i<passIn;i++){
+				queuePassengers.remove();
+			}
+
 			// extra passengers:
 			double expectedDeparture = timeEvent+dwellTime;
 			int passExtra = 0;
@@ -55,12 +59,12 @@ class TramStop{
 			if (!queuePassengers.isEmpty()){
 				passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);
 				expectedDeparture += dwellTime(passExtra, 0);
+				for (int i=0;i<passExtra;i++){
+					queuePassengers.remove();
+				}
 			}
 
 			tram.addPassengers(passIn+passExtra-passOut);
-			for (int i=0;i<passIn+passExtra;i++){
-				queuePassengers.remove();
-			}
 			
 			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
@@ -73,7 +77,7 @@ class TramStop{
 			double scheduledDep = tram.schelduledDeparture();
 			if (expectedDeparture > scheduledDep) System.out.println("Tram "+tram.id+" "+(expectedDeparture-scheduledDep) +" minuten achter op schema");
 			else{
-				System.out.println("Tram "+ tram.id+ " loopt voor op schema");
+				System.out.println("Tram "+ tram.id+ " loopt voor op schema"+ scheduledDep);
 				expectedDeparture = scheduledDep;
 			}
 
