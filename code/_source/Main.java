@@ -30,7 +30,7 @@ class UithoflijnSim{
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-    ArrayList<ArrayList<Double>> schedules = DistributionVariables.schedule(5, 8, 4);
+    Queue<ArrayList<Double>> schedules = DistributionVariables.schedule(5, 8, 4);
 
 	public void run(){
         // Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
@@ -44,7 +44,7 @@ class UithoflijnSim{
         // }
 
         // die get moet misschien een queue worden
-        ArrayList<Double> newSchedule = schedules.get((int)time);
+        ArrayList<Double> newSchedule = schedules.poll();
         Tram tram1 = new Tram(1, newSchedule);
         eventList.add(new Arrival(time,tram1));
 
@@ -197,7 +197,7 @@ class DistributionVariables{
     // }
 
     // freq is trams per hour
-    public static ArrayList<ArrayList<Double>> schedule(int q, int spitsFreq, int dalFreq){
+    public static Queue<ArrayList<Double>> schedule(int q, int spitsFreq, int dalFreq){
         // int roundTrip = 34+2*q; // dit is dus die met alle stops
 
         // calc de gewenste between time
@@ -216,18 +216,19 @@ class DistributionVariables{
         spitsBetweenTime = 60/spitsTrams;
 
         // Een arraylist met op elke index-tijd een mini schedule voor de tram (p+r en cs)
-        ArrayList<ArrayList<Double>> arrivaltimes = new ArrayList<ArrayList<Double>>();
+        Queue<ArrayList<Double>> arrivaltimes = new LinkedList<ArrayList<Double>>();
        
         // eerste daluren, dit is nog erg onhandig.....
         double time=0;
         // for(int i = 0; i < dalTrams; i++){
             // time = dalBetweenTime*i;      
             // while(time<60){
-                ArrayList<Double> mytimes = new ArrayList<>(Arrays.asList(time+singleTrip, time+roundTrip));
-                arrivaltimes.add((int)time, mytimes);
+                ArrayList<Double> mytimes = new ArrayList<>(Arrays.asList(time, time+singleTrip));
+                arrivaltimes.add(mytimes);
                 time += roundTrip;
             // }
         // }
+        System.out.println(arrivaltimes.peek().get(0));
 
 
         System.out.println(spitsBetweenTime +" "+dalBetweenTime+" "+dalTrams+" "+spitsTrams);

@@ -77,7 +77,7 @@ class TramStop{
 			double scheduledDep = tram.schelduledDeparture();
 			if (expectedDeparture > scheduledDep) System.out.println("Tram "+tram.id+" "+(expectedDeparture-scheduledDep) +" minuten achter op schema");
 			else{
-				System.out.println("Tram "+ tram.id+ " loopt voor op schema");
+				System.out.println("Tram "+ tram.id+ " loopt voor op schema"+ scheduledDep);
 				expectedDeparture = scheduledDep;
 			}
 
