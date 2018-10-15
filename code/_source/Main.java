@@ -1,7 +1,9 @@
 import java.util.PriorityQueue;
 import java.util.LinkedList; 
 import java.util.Queue;
-import java.util.Arrays; 
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 
 //////////// csv //////////////
@@ -27,19 +29,25 @@ class UithoflijnSim{
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
-	Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-
+	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
+    ArrayList<ArrayList<Double>> schedules = DistributionVariables.schedule(5, 8, 4);
 
 	public void run(){
-        Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
-        eventList.add(new Arrival(time,tram1));
-        Tram tram2 = new Tram(2, arrivals[1].tram.scheduledDep);
-        eventList.add(new Arrival(time+1,tram2));
-        Tram tram3 = new Tram(3, arrivals[2].tram.scheduledDep);
-        eventList.add(new Arrival(time+2,tram3));
+        // Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
+        // eventList.add(new Arrival(time,tram1));
+        // Tram tram2 = new Tram(2, arrivals[1].tram.scheduledDep);
+        // eventList.add(new Arrival(time+1,tram2));
+        // Tram tram3 = new Tram(3, arrivals[2].tram.scheduledDep);
+        // eventList.add(new Arrival(time+2,tram3));
         // for (Arrival arrival : arrivals){
         //     eventList.add(arrival);
         // }
+
+        // die get moet misschien een queue worden
+        ArrayList<Double> newSchedule = schedules.get((int)time);
+        Tram tram1 = new Tram(1, newSchedule);
+        eventList.add(new Arrival(time,tram1));
+
 
 		//to do: aanmaken trams en arrivals
 		while (time<30){
@@ -145,48 +153,85 @@ class DistributionVariables{
         // }
         return tramstops;
     }
-    public static Arrival[] getTrams(String fileName) {
-        // dit niet zelf generen op basis van q, spitsFreq en dalFreq?
-        Arrival[] scheduledArr = new Arrival[12];
-        String csvFile = fileName;
-        BufferedReader br = null;
-        String line = "";
-        String csvSplitBy = ";";    
+    // public static Arrival[] getTrams(String fileName) {
+    //     // dit niet zelf generen op basis van q, spitsFreq en dalFreq?
+    //     Arrival[] scheduledArr = new Arrival[12];
+    //     String csvFile = fileName;
+    //     BufferedReader br = null;
+    //     String line = "";
+    //     String csvSplitBy = ";";    
 
-        try {
+    //     try {
 
-            br = new BufferedReader(new FileReader(csvFile));
+    //         br = new BufferedReader(new FileReader(csvFile));
 
             
-            int n = 0;
-            String[] departures;
+    //         int n = 0;
+    //         String[] departures;
 
-            while ((line = br.readLine()) != null) {
+    //         while ((line = br.readLine()) != null) {
 
-                departures = line.split(csvSplitBy);
+    //             departures = line.split(csvSplitBy);
 
-                double[] scheduledDep =new double[19];
+    //             double[] scheduledDep =new double[19];
 
-                for (int i=0;i<departures.length;i++){scheduledDep[i] = Double.parseDouble(departures[i]);}
-                scheduledArr[n]= new Arrival(scheduledDep[0], new Tram(n, scheduledDep));
-                n++;
-            }
+    //             for (int i=0;i<departures.length;i++){scheduledDep[i] = Double.parseDouble(departures[i]);}
+    //             scheduledArr[n]= new Arrival(scheduledDep[0], new Tram(n, scheduledDep));
+    //             n++;
+    //         }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return scheduledArr;        
+    //     } catch (FileNotFoundException e) {
+    //         e.printStackTrace();
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     } finally {
+    //         if (br != null) {
+    //             try {
+    //                 br.close();
+    //             } catch (IOException e) {
+    //                 e.printStackTrace();
+    //             }
+    //         }
+    //     }
+    //     return scheduledArr;        
+    // }
+
+    // freq is trams per hour
+    public static ArrayList<ArrayList<Double>> schedule(int q, int spitsFreq, int dalFreq){
+        // int roundTrip = 34+2*q; // dit is dus die met alle stops
+
+        // calc de gewenste between time
+        double roundTrip = 27+2*q;
+        double singleTrip = 13.5+q;
+        double spitsBetweenTime = 60/spitsFreq;
+        double dalBetweenTime = 60/dalFreq;
+
+        // kijk hoeveel trams je daarvoor moet inzetten
+        int dalTrams = (int)Math.ceil(roundTrip/dalBetweenTime);
+        int spitsTrams = (int)Math.ceil(roundTrip/spitsBetweenTime);
+        int extraTrams = spitsTrams-dalTrams;
+
+        // herbereken de between time op basis van aantal trams voor mooie spreiding
+        dalBetweenTime = 60/dalTrams;
+        spitsBetweenTime = 60/spitsTrams;
+
+        // Een arraylist met op elke index-tijd een mini schedule voor de tram (p+r en cs)
+        ArrayList<ArrayList<Double>> arrivaltimes = new ArrayList<ArrayList<Double>>();
+       
+        // eerste daluren, dit is nog erg onhandig.....
+        double time=0;
+        // for(int i = 0; i < dalTrams; i++){
+            // time = dalBetweenTime*i;      
+            // while(time<60){
+                ArrayList<Double> mytimes = new ArrayList<>(Arrays.asList(time+singleTrip, time+roundTrip));
+                arrivaltimes.add((int)time, mytimes);
+                time += roundTrip;
+            // }
+        // }
+
+
+        System.out.println(spitsBetweenTime +" "+dalBetweenTime+" "+dalTrams+" "+spitsTrams);
+        return arrivaltimes;
     }
-
 
 }
