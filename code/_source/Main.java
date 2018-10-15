@@ -26,11 +26,12 @@ public class Main{
 class UithoflijnSim{
 	//Exercise parameters
 	double time = 0;
+    double q = 5;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
-	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv");
+	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-    Queue<double[]> schedules = DistributionVariables.schedule(5, 8, 4, 4);
+    Queue<double[]> schedules = DistributionVariables.schedule(q, 8, 4, 4);
 
 	public void run(){
         // Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
@@ -49,10 +50,10 @@ class UithoflijnSim{
         eventList.add(new Arrival(time,tram1));
         double[] nextSched = schedules.poll();
         Tram tram2 = new Tram(2, nextSched);
-        eventList.add(new Arrival(nextSched[0]-5,tram2));
+        eventList.add(new Arrival(nextSched[0]-q,tram2));
         nextSched = schedules.poll();
         Tram tram3 = new Tram(3, nextSched);
-        eventList.add(new Arrival(nextSched[0]-5,tram3));
+        eventList.add(new Arrival(nextSched[0]-q,tram3));
 
 
 		//to do: aanmaken trams en arrivals
@@ -101,7 +102,7 @@ class UithoflijnSim{
 class DistributionVariables{
 
 
-	public static TramStop[] getTramStops(String fileName) {
+	public static TramStop[] getTramStops(String fileName, double q) {
 		TramStop[] tramstops = new TramStop[20];
         String csvFile = fileName;
         BufferedReader br = null;
@@ -131,7 +132,7 @@ class DistributionVariables{
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
                 if (n==0 || n==10){
-                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, 5);
+                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, q);
                     tramstops[n] = eindhalte;
                     tramstops[n+1] = eindhalte;
                     tramstops[n+2] = eindhalte;
@@ -206,7 +207,7 @@ class DistributionVariables{
     // }
 
     // freq is trams per hour
-    public static Queue<double[]> schedule(int q, int spitsFreq, int dayFreq, int dalFreq){
+    public static Queue<double[]> schedule(double q, int spitsFreq, int dayFreq, int dalFreq){
         
 
         // calc de gewenste between time

@@ -2,9 +2,9 @@ public class Eindhalte extends TramStop{
 	// 0 is 'goed' spoor, 1 is 'slecht' spoor
 	private Tram[] platform = new Tram[2];
 	private Tram idle;
-	private int q;
+	private double q;
 	// extra argument q turnaround time
-	public Eindhalte (int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin, int q){
+	public Eindhalte (int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin, double q){
 		super(id,lambdaArr,probDep,runtimeMu,runtimeVar,runtimeMin);
 		this.q=q;
 	}
