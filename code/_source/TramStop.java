@@ -44,15 +44,25 @@ class TramStop{
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
-			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+" QUEUE: "+queuePassengers.size());
-			for (int i=0;i<passIn;i++){
-				queuePassengers.remove();
+			
+			// extra passengers:
+			double expectedDeparture = timeEvent+dwellTime;
+			int passExtra = 0;
+			this.generatePassengers(expectedDeparture);
+			if (!queuePassengers.isEmpty()){
+				passExtra = Math.min(queuePassengers.size(), 420-numPassengers+passOut-passIn);
+				expectedDeparture += dwellTime(passExtra, 0);
 			}
 
-			//to do: extra instappers toevoegen
-			tram.addPassengers(passIn-passOut);
+			tram.addPassengers(passIn+passExtra-passOut);
+			for (int i=0;i<passIn+passExtra;i++){
+				queuePassengers.remove();
+			}
+			
+			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
+
 			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
-			return new Departure(timeEvent+dwellTime,tram,id);
+			return new Departure(expectedDeparture, tram, id);
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
