@@ -9,10 +9,11 @@ import java.lang.Math;
 
 class TramStop{
 	public int id;
-	public boolean idle = true;
+	boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastPassengerArrival = 0;
+	double timeLastDeparture = 0;
+	double timeLastArrival = 0;
 	public double maxWaitingTime=0;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
@@ -30,8 +31,10 @@ class TramStop{
 	}
 	public Departure planDeparture(Tram tram, double timeEvent){
 			//in case tram has to wait for previous tram to depart
-			timeEvent=Math.max(timeLastPassengerArrival+(double)2/3,timeEvent);
+			if (!this.serverIdle(tram)) return null;
+
 			tram.setLocation();
+			timeEvent = Math.max(timeEvent, timeLastDeparture+(double)2/3);
 
 			this.generatePassengers(timeEvent);
 
@@ -52,34 +55,38 @@ class TramStop{
 			//to do: extra instappers toevoegen
 			tram.addPassengers(passIn-passOut);
 			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
-			return new Departure(timeEvent+dwellTime,tram,id);
+			double departureTime = timeEvent+dwellTime;
+			// if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+			// 	departureTime = Math.max(departureTime, tram.scheduledDep[id]);
+			// }
+			return new Departure(departureTime,tram,id);
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
-		if (!this.serverIdle(tram)) return null;
 
 		double runtime = runtimeDist.sample();
 		runtime = Math.max(runtime, runtimeMin);
 		if (id == 4 || id == 9) runtime --; // after switch
 		//System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
-		return new Arrival(timeEvent+runtime, tram);
+		double arrivalTime = Math.max(timeLastArrival,timeEvent+runtime);
+		timeLastArrival = arrivalTime+0.000001;
+		return new Arrival(arrivalTime, tram);
 	}
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
 			queueTram.addLast(tram);
-			System.out.println("in de rij: tram "+tram.id);
+			System.out.println("in rij voor stop "+id+": tram "+tram.id);
 			return false;
 		}
-		else {
-			this.idle = false;
-			return true;
-		}
+		//tramstop available, schedule departure
+		this.idle=false;
+		return true;
 	}
 	public Tram nextTramInQueue(){
 		return queueTram.poll();
 	} 	
 	private void generatePassengers(double to){
-		double currArrival=timeLastPassengerArrival;
+		double currArrival=timeLastDeparture;
 		while (currArrival<to){
 			double nextArrival = getNextPassenger(currArrival);
 
@@ -92,7 +99,7 @@ class TramStop{
 				currArrival = (timeSlot(currArrival)+1)*15;
 			}
 		}
-		timeLastPassengerArrival = to;
+		timeLastDeparture = to;
 	}
 	 private double getNextPassenger(double time) {
     	return  Math.log(1-rand.nextDouble())/(-lambdaArr[timeSlot(time)])+ time;

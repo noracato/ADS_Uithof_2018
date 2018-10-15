@@ -42,7 +42,7 @@ class UithoflijnSim{
         // }
 
 		//to do: aanmaken trams en arrivals
-		while (time<180){
+		while (time<30){
 			tick();
 		}
         for (TramStop tramstop : tramstops){
@@ -59,11 +59,11 @@ class UithoflijnSim{
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram);
             Arrival nextArrival = tramstops[(id+1) % 16].planArrival(time, tram);
-            if (nextArrival!=null) {eventList.add(nextArrival);}
+            eventList.add(nextArrival);
 
             Tram nextTram = tramstops[id % 16].nextTramInQueue();
             if (nextTram!=null){
-                System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+id+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
+                System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
                 eventList.add(tramstops[id % 16].planDeparture(nextTram,time));
             }
 			
@@ -71,7 +71,7 @@ class UithoflijnSim{
 		else {
             System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
 			Departure departure = tramstops[(id+1) %16].planDeparture(tram,time);
-            eventList.add(departure);
+            if (departure!=null) eventList.add(departure);
 
 		}
 
@@ -147,7 +147,7 @@ class DistributionVariables{
     }
     public static Arrival[] getTrams(String fileName) {
         // dit niet zelf generen op basis van q, spitsFreq en dalFreq?
-        Arrival[] scheduledArr = new Arrival[103];
+        Arrival[] scheduledArr = new Arrival[12];
         String csvFile = fileName;
         BufferedReader br = null;
         String line = "";
@@ -157,9 +157,6 @@ class DistributionVariables{
 
             br = new BufferedReader(new FileReader(csvFile));
 
-            br.readLine();
-            br.readLine();
-
             
             int n = 0;
             String[] departures;
@@ -168,9 +165,9 @@ class DistributionVariables{
 
                 departures = line.split(csvSplitBy);
 
-                double[] scheduledDep =new double[12];
+                double[] scheduledDep =new double[19];
 
-                for (int i=0;i<12;i++){scheduledDep[i] = Double.parseDouble(departures[i]);}
+                for (int i=0;i<departures.length;i++){scheduledDep[i] = Double.parseDouble(departures[i]);}
                 scheduledArr[n]= new Arrival(scheduledDep[0], new Tram(n, scheduledDep));
                 n++;
             }
