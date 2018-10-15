@@ -58,10 +58,10 @@ class TramStop{
 			this.generatePassengers(expectedDeparture);
 			if (!queuePassengers.isEmpty()){
 				passExtra = Math.min(queuePassengers.size(), 420-numPassengers+passOut-passIn);
-				expectedDeparture += dwellTime(passExtra, 0);
 				for (int i=0;i<passExtra;i++){
 					queuePassengers.remove();
 				}
+				if (tram.getLocation() != 1 && tram.getLocation() != 9) expectedDeparture += dwellTime(passExtra, 0);
 			}
 
 			tram.addPassengers(passIn+passExtra-passOut);
