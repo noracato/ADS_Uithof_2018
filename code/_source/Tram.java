@@ -26,13 +26,13 @@ public class Tram {
 	}
 	public void setLocation(){
 		this.location++;
-		if (location == 16) location = 0;
+		if (location == 20) location = 0;
 	}
 
 	// returns time tram is supposed to leave location
 	public double schelduledDeparture(){
 		// When at endstation (9), change to new time // change this when adding more stops!!
-		if (location < 9){
+		if (location < 11){
 			return scheduledDepStops[location]+scheduledDepEnds[0];
 		}
 		return scheduledDepStops[location]+scheduledDepEnds[1];

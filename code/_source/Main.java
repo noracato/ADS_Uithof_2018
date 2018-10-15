@@ -50,7 +50,7 @@ class UithoflijnSim{
 
 
 		//to do: aanmaken trams en arrivals
-		while (time<30){
+		while (time<50){
 			tick();
 		}
         for (TramStop tramstop : tramstops){
@@ -200,11 +200,11 @@ class DistributionVariables{
 
     // freq is trams per hour
     public static Queue<double[]> schedule(int q, int spitsFreq, int dayFreq, int dalFreq){
-        // int roundTrip = 34+2*q; // dit is dus die met alle stops
+        
 
         // calc de gewenste between time
-        double roundTrip = 27+2*q;
-        double singleTrip = 13.5+q;
+        double roundTrip = 34+2*q;
+        double singleTrip = 17+q;
         double spitsBetweenTime = 60/spitsFreq;
         double dayBetweenTime = 60/dayFreq;
         double dalBetweenTime = 60/dalFreq;
@@ -233,11 +233,6 @@ class DistributionVariables{
             else time += dalBetweenTime;
         }
 
-
-        System.out.println(arrivaltimes.peek()[0]);
-
-
-        System.out.println(spitsBetweenTime +" "+dalBetweenTime);
         return arrivaltimes;
     }
 
