@@ -4,7 +4,7 @@ public class Tram {
 	// Time tram should leave at uithof(0) and cs(1)
 	double[] scheduledDepEnds;
 	int numPassengers = 0;
-	int location = 1;
+	int location = 0;
 	int id;
 	public double[] scheduledDepStops = {17, 0, 0, 2.1521, 3.771, 5.456, 6.775, 8.7604, 10.0625, 14.4313
 									, 17, 0, 0, 2.5375, 6.8917, 8.1792, 10.1667, 11.4708, 13.2083333333333,14.8125};

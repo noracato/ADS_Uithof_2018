@@ -43,14 +43,20 @@ class UithoflijnSim{
         //     eventList.add(arrival);
         // }
 
-        // die get moet misschien een queue worden
-        double[] newSchedule = schedules.poll();
-        Tram tram1 = new Tram(1, newSchedule);
+        
+        Tram tram1 = new Tram(1, schedules.poll());
+        tram1.setLocation();
         eventList.add(new Arrival(time,tram1));
+        double[] nextSched = schedules.poll();
+        Tram tram2 = new Tram(2, nextSched);
+        eventList.add(new Arrival(nextSched[0]-5,tram2));
+        nextSched = schedules.poll();
+        Tram tram3 = new Tram(3, nextSched);
+        eventList.add(new Arrival(nextSched[0]-5,tram3));
 
 
 		//to do: aanmaken trams en arrivals
-		while (time<50){
+		while (time<70){
 			tick();
 		}
         for (TramStop tramstop : tramstops){
@@ -80,6 +86,7 @@ class UithoflijnSim{
 		}
 		else {
             System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+            if(id == 19) tram.setNewSchedule(schedules.poll()); // uitgebreider!
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
             if (departure!=null) eventList.add(departure);
 
@@ -232,6 +239,8 @@ class DistributionVariables{
             else if (time < 720) time += spitsBetweenTime;
             else time += dalBetweenTime;
         }
+
+        System.out.println(arrivaltimes.peek()[0]);
 
         return arrivaltimes;
     }
