@@ -42,42 +42,35 @@ class TramStop{
 			int timeSlot = timeSlot(timeEvent);
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
 			int passIn = 0;
-			if (!queuePassengers.isEmpty()){
+			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
 				maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
 
 			// extra passengers:
-			double expectedDeparture = timeEvent+dwellTime;
+			double departureTime = timeEvent+dwellTime;
 			int passExtra = 0;
-			this.generatePassengers(expectedDeparture);
-			if (!queuePassengers.isEmpty()){
+			this.generatePassengers(departureTime);
+			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
 				passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);	
-				if (tram.getLocation() != 1 && tram.getLocation() != 11) expectedDeparture += dwellTime(passExtra, 0);
+				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
 			}
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			
 			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
-			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
-						// if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
-			// 	departureTime = Math.max(departureTime, tram.scheduledDep[id]);
-			// }
-
 			// trammertje kijkt of het te laat is
-			double scheduledDep = tram.schelduledDeparture();
-			if (expectedDeparture > scheduledDep) System.out.println("Tram "+tram.id+" "+(expectedDeparture-scheduledDep) +" minuten achter op schema");
-			else{
-				System.out.println("Tram "+ tram.id+ " loopt voor op schema"+ scheduledDep);
-				expectedDeparture = scheduledDep;
+			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+			 	departureTime = Math.max(departureTime, tram.schelduledDeparture());
 			}
 
-			return new Departure(expectedDeparture, tram, id);
+
+
+			return new Departure(departureTime, tram);
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
@@ -93,7 +86,7 @@ class TramStop{
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
 			queueTram.addLast(tram);
-			System.out.println("in rij voor stop "+id+": tram "+tram.id);
+			//System.out.println("in rij voor stop "+id+": tram "+tram.id);
 			return false;
 		}
 		//tramstop available, schedule departure

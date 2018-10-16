@@ -42,34 +42,37 @@ class UithoflijnSim{
         // for (Arrival arrival : arrivals){
         //     eventList.add(arrival);
         // }
+        // Tram tram1 = new Tram(1, schedules.poll());
+        // tram1.setLocation();
+        // ArrivalUithof firstArr = new ArrivalUithof(time);
+        // eventList.add(firstArr);
 
-        
-        Tram tram1 = new Tram(1, schedules.poll());
-        tram1.setLocation();
-        eventList.add(new Arrival(time,tram1));
         double[] nextSched = schedules.poll();
-        Tram tram2 = new Tram(2, nextSched);
-        eventList.add(new Arrival(nextSched[0]-5,tram2));
-        nextSched = schedules.poll();
-        Tram tram3 = new Tram(3, nextSched);
-        eventList.add(new Arrival(nextSched[0]-5,tram3));
+        while (nextSched!=null){
+            eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched));
+            nextSched = schedules.poll();
+        }
 
 
 		//to do: aanmaken trams en arrivals
-		while (time<70){
+		while (time<180){
 			tick();
 		}
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+", max waitingtime: "+tramstop.totPassengers);
+            System.out.println("tramstop: "+tramstop.id+", total passengers: "+tramstop.totPassengers);
         }
 	}
 	private void tick(){
 		Event nextEvent = eventList.poll();
-        int id = nextEvent.getLocation();
         time = nextEvent.timeEvent;
         Tram tram = nextEvent.tram;
-
-		if (nextEvent instanceof Departure){
+        
+        if (nextEvent instanceof ArrivalUithof) {
+            Arrival newArrival = ((Eindhalte)tramstops[1]).newArrival(((ArrivalUithof)nextEvent).getSchedule());      
+            eventList.add(newArrival);
+        }
+		else if (nextEvent instanceof Departure){
+            int id = nextEvent.getLocation();
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram);
             Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
@@ -80,15 +83,17 @@ class UithoflijnSim{
             Tram nextTram = tramstops[id % 20].nextTramInQueue();
             if (nextTram!=null){
                 System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                eventList.add(tramstops[id % 20].planDeparture(nextTram,time));
+                Departure departure = tramstops[id % 20].planDeparture(nextTram,time);
+                if (!(id==1 && tram.waitingAtPR)) eventList.add(departure);
             }
 			
 		}
-		else {
+		else {//then nextEvent is Arrival
+            int id = nextEvent.getLocation();
             System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-            if(id == 19) tram.setNewSchedule(schedules.poll()); // uitgebreider!
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            if (departure!=null) eventList.add(departure);
+            if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
+            if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
 
 		}
 
@@ -211,7 +216,7 @@ class DistributionVariables{
 
         // calc de gewenste between time
         double roundTrip = 34+2*q;
-        double singleTrip = 17+q;
+        double st = 17+q;
         double spitsBetweenTime = 60/spitsFreq;
         double dayBetweenTime = 60/dayFreq;
         double dalBetweenTime = 60/dalFreq;
@@ -229,9 +234,14 @@ class DistributionVariables{
        
         // eerste daluren, dit is nog erg onhandig.....
         double time=0;
-       
+        double[] scheduledDepStops = {17+st, 0, 0, 2.1521, 3.771, 5.456, 6.775, 8.7604, 10.0625, 14.4313
+                                    , 17, st, st, st+2.5375, st+6.8917, st+8.1792, st+10.1667, st+11.4708, st+13.2083333333333,st+14.8125}; 
+
         while(time<840){
-            double[] mytimes = new double[]{time, time+singleTrip};
+            double[] mytimes = new double[20];
+            for (int i=0; i<20;i++){
+                mytimes[i]=time+scheduledDepStops[i];
+            }
             arrivaltimes.add(mytimes);
             if(time < 60) time += dalBetweenTime;
             else if (time < 180) time += spitsBetweenTime;
@@ -240,7 +250,7 @@ class DistributionVariables{
             else time += dalBetweenTime;
         }
 
-        System.out.println(arrivaltimes.peek()[0]);
+        //System.out.println(arrivaltimes.peek()[0]);
 
         return arrivaltimes;
     }

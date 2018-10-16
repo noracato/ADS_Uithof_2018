@@ -1,9 +1,8 @@
 public abstract class Event{
 	double timeEvent;
 	public Tram tram; // evt veranderen in tramID?
-	public Event(double timeEvent, Tram tram){
+	public Event(double timeEvent){
 		this.timeEvent = timeEvent;
-		this.tram = tram;
 	}	
 	public double getTime(){
 		return timeEvent;
