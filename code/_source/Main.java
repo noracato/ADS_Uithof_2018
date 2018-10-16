@@ -25,13 +25,13 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 0;
+	double time = 60;
     double q = 5;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-    Queue<double[]> schedules = DistributionVariables.schedule(q, 8, 4, 4);
+    Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 4, 4, time, 180.0);
 
 	public void run(){
         // Tram tram1 = new Tram(1, arrivals[0].tram.scheduledDep);
@@ -61,7 +61,8 @@ class UithoflijnSim{
 			tick();
 		}
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+", total passengers: "+tramstop.totPassengers);
+            System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
+                " max. queueLength: "+tramstop.maxQueueLength+", maxwaiting time: "+tramstop.maxWaitingTime);
         }
 	}
 	private void tick(){
@@ -213,7 +214,7 @@ class DistributionVariables{
     // }
 
     // freq is trams per hour
-    public static Queue<double[]> schedule(double q, int spitsFreq, int dayFreq, int dalFreq){
+    public static Queue<double[]> schedule(double q, int spitsFreq, int dayFreq, int dalFreq, double from, double to){
         
 
         // calc de gewenste between time
@@ -235,11 +236,11 @@ class DistributionVariables{
         Queue<double[]> arrivaltimes = new LinkedList<double[]>();
        
         // eerste daluren, dit is nog erg onhandig.....
-        double time=0;
+        double time=from;
         double[] scheduledDepStops = {17+st, 0, 0, 2.1521, 3.771, 5.456, 6.775, 8.7604, 10.0625, 14.4313
                                     , 17, st, st, st+2.5375, st+6.8917, st+8.1792, st+10.1667, st+11.4708, st+13.2083333333333,st+14.8125}; 
 
-        while(time<840){
+        while(time<to){
             double[] mytimes = new double[20];
             for (int i=0; i<20;i++){
                 mytimes[i]=time+scheduledDepStops[i];

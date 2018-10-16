@@ -32,7 +32,7 @@ public class Tram {
 	}
 
 	// returns time tram is supposed to leave location
-	public double schelduledDeparture(){
+	public double scheduledDeparture(){
 		// When at endstation (9), change to new time // change this when adding more stops!!
 		return scheduledDep[location];
 	}

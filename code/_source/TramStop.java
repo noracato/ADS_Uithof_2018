@@ -12,15 +12,18 @@ class TramStop{
 	boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastDeparture = 0;
-	double timeLastArrival = 0;
-	public double maxWaitingTime=0;
+	double timeLastDeparture = 60;
+	double timeLastArrival = 60;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
  	Random rand = new Random(); 
  	LogNormalDistribution runtimeDist;
  	double runtimeMin;
- 	public double totPassengers;
+ 	public int totPassengers = 0;
+ 	public int totLeaving = 0;
+ 	public double maxWaitingTime=0;
+ 	public int maxQueueLength=0;
+
 
 	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
 		this.id = id;
@@ -41,6 +44,7 @@ class TramStop{
 			int numPassengers = tram.getNumPassengers();
 			int timeSlot = timeSlot(timeEvent);
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
+			this.totLeaving+=passOut;
 			int passIn = 0;
 			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
 				maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
@@ -61,11 +65,13 @@ class TramStop{
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
+			//System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
 			// trammertje kijkt of het te laat is
 			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
-			 	departureTime = Math.max(departureTime, tram.schelduledDeparture());
+				double vertraging = departureTime - tram.scheduledDeparture();
+				if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
+			 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 			}
 
 
@@ -110,6 +116,7 @@ class TramStop{
 				currArrival = (timeSlot(currArrival)+1)*15;
 			}
 		}
+		maxQueueLength = Math.max(maxQueueLength,queuePassengers.size());
 		timeLastDeparture = to;
 	}
 	 private double getNextPassenger(double time) {
