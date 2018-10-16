@@ -2,17 +2,15 @@ import java.util.ArrayList;
 
 public class Tram {
 	// Time tram should leave at uithof(0) and cs(1)
-	double[] scheduledDepEnds;
+	double[] scheduledDep;
 	int numPassengers = 0;
-	int location = 0;
+	public int location = 0;
 	int id;
-	public double[] scheduledDepStops = {17, 0, 0, 2.1521, 3.771, 5.456, 6.775, 8.7604, 10.0625, 14.4313
-									, 17, 0, 0, 2.5375, 6.8917, 8.1792, 10.1667, 11.4708, 13.2083333333333,14.8125};
+	public boolean waitingAtPR=false;
 
-
-	public Tram(int id, double[] scheduledDepEnds){
+	public Tram(int id, double[] scheduledDep){
 		this.id=id;
-		this.scheduledDepEnds = scheduledDepEnds;
+		this.scheduledDep = scheduledDep;
 	}
 	public void addPassengers(int numPassengers)
 	{
@@ -26,20 +24,21 @@ public class Tram {
 	}
 	public void setLocation(){
 		this.location++;
-		if (location == 20) location = 0;
+		if (location == 20) {
+			location = 0;
+			this.waitingAtPR=true;
+		}
+		else if (location>1) this.waitingAtPR = false;
 	}
 
 	// returns time tram is supposed to leave location
-	public double schelduledDeparture(){
+	public double scheduledDeparture(){
 		// When at endstation (9), change to new time // change this when adding more stops!!
-		if (location < 11){
-			return scheduledDepStops[location]+scheduledDepEnds[0];
-		}
-		return scheduledDepStops[location]+scheduledDepEnds[1];
+		return scheduledDep[location];
 	}
 
 	// set a new schedule for the tram
-	public void setNewSchedule(double[] scheduledDepEnds){
-		this.scheduledDepEnds = scheduledDepEnds;
+	public void setNewSchedule(double[] scheduledDep){
+		this.scheduledDep = scheduledDep;
 	}
 }

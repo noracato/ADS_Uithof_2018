@@ -17,25 +17,24 @@ public class Eindhalte extends TramStop{
 		}
 
 
-		if (!this.serverIdle(tram)){
+
+		if (!this.serverIdle(tram) && !this.backToStart(tram)){
 				queueTram.addLast(tram);
-				System.out.println("LAATSTE in rij voor stop "+id+": tram "+tram.id);
+				//System.out.println("LAATSTE in rij voor stop "+id+": tram "+tram.id);
 				return null;
 		}
 
 		//plan departure from switch
-		// if crossing over switch, set switch to false (else tram is going straight and nothing happens)
-
-
+		//set switch to false
 		if (this.idle==null || switchAvailable(tram)){
 			this.idle=tram;
-			System.out.println("SWITCH BEZET");			
+			//System.out.println("SWITCH BEZET");			
 			tram.setLocation();
-			return new Departure(timeEvent+1,tram,id);
+			return new Departure(timeEvent+1,tram);
 		}
 		//switch is occupied		
 		queueTram.addFirst(tram);
-		System.out.println("EERSTE in rij voor stop "+id+": tram "+tram.id);
+		//System.out.println("EERSTE in rij voor stop "+id+": tram "+tram.id);
 		return null;				
 
 	}
@@ -79,7 +78,7 @@ public class Eindhalte extends TramStop{
 			else platform[1]=null;
 		}
 		if (tram.getLocation()!=id+1 && this.idle==tram) {
-			System.out.println("SWITCH IDLE");
+			//System.out.println("SWITCH IDLE");
 			this.idle=null;
 		}
 	}
@@ -93,5 +92,29 @@ public class Eindhalte extends TramStop{
 		if (tram !=null && serverIdle(tram) && (this.idle==null || switchAvailable(tram))) return queueTram.poll();
 		return null;
 	}
-
+	private boolean backToStart(Tram tram){
+		if (tram.getLocation() !=19) return false;
+		for (int i =0; i<2;i++){
+			if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+				System.out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
+				platform[i]=tram;
+				return true;
+			}			
+		}
+		return false;
+	}
+	public Arrival newArrival(double[] schedule){
+		for (int i =0; i<2;i++){
+			if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+				System.out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
+				super.planDeparture(platform[i],schedule[1]-5);
+				platform[i].location--;
+				platform[i].setNewSchedule(schedule);
+				return new Arrival(schedule[1],platform[i]);
+			}			
+		}
+		System.out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
+		Tram newTram = new Tram((int)schedule[1],schedule);
+		return new Arrival(schedule[1],newTram);
+	}
 }

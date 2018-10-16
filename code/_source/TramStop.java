@@ -12,15 +12,18 @@ class TramStop{
 	boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastDeparture = 0;
-	double timeLastArrival = 0;
-	public double maxWaitingTime=0;
+	double timeLastDeparture = 60;
+	double timeLastArrival = 60;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
  	Random rand = new Random(); 
  	LogNormalDistribution runtimeDist;
  	double runtimeMin;
- 	public double totPassengers;
+ 	public int totPassengers = 0;
+ 	public int totLeaving = 0;
+ 	public double maxWaitingTime=0;
+ 	public int maxQueueLength=0;
+
 
 	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
 		this.id = id;
@@ -41,43 +44,39 @@ class TramStop{
 			int numPassengers = tram.getNumPassengers();
 			int timeSlot = timeSlot(timeEvent);
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
+			this.totLeaving+=passOut;
 			int passIn = 0;
-			if (!queuePassengers.isEmpty()){
+			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
 				maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
 
 			// extra passengers:
-			double expectedDeparture = timeEvent+dwellTime;
+			double departureTime = timeEvent+dwellTime;
 			int passExtra = 0;
-			this.generatePassengers(expectedDeparture);
-			if (!queuePassengers.isEmpty()){
+			this.generatePassengers(departureTime);
+			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
 				passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);	
-				if (tram.getLocation() != 1 && tram.getLocation() != 11) expectedDeparture += dwellTime(passExtra, 0);
+				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
 			}
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			
-			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
-
-			//to do: wachten trams als ze vooruit lopen op schema?? event.tram.scheduledArr[id]),
-						// if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
-			// 	departureTime = Math.max(departureTime, tram.scheduledDep[id]);
-			// }
+			//System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
 			// trammertje kijkt of het te laat is
-			double scheduledDep = tram.schelduledDeparture();
-			if (expectedDeparture > scheduledDep) System.out.println("Tram "+tram.id+" "+(expectedDeparture-scheduledDep) +" minuten achter op schema");
-			else{
-				System.out.println("Tram "+ tram.id+ " loopt voor op schema"+ scheduledDep);
-				expectedDeparture = scheduledDep;
+			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+				double vertraging = departureTime - tram.scheduledDeparture();
+				if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
+			 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 			}
 
-			return new Departure(expectedDeparture, tram, id);
+
+
+			return new Departure(departureTime, tram);
 		
 	}
 	public Arrival planArrival(double timeEvent, Tram tram){
@@ -93,7 +92,7 @@ class TramStop{
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
 			queueTram.addLast(tram);
-			System.out.println("in rij voor stop "+id+": tram "+tram.id);
+			//System.out.println("in rij voor stop "+id+": tram "+tram.id);
 			return false;
 		}
 		//tramstop available, schedule departure
@@ -117,6 +116,7 @@ class TramStop{
 				currArrival = (timeSlot(currArrival)+1)*15;
 			}
 		}
+		maxQueueLength = Math.max(maxQueueLength,queuePassengers.size());
 		timeLastDeparture = to;
 	}
 	 private double getNextPassenger(double time) {
