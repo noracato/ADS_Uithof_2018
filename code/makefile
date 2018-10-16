@@ -6,7 +6,7 @@ CL=.:_source/commons-math3-3.6.1/commons-math3-3.6.1.jar:./bin
 # windows check
 ifeq ($(shell echo "check_quotes"),"check_quotes")
 	CL=.;_source/commons-math3-3.6.1/commons-math3-3.6.1.jar;./bin
-	RM = del /Q
+	RM =del /Q
 endif
 
 .SUFFIXES: .java .class

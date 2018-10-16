@@ -56,7 +56,6 @@ class UithoflijnSim{
         eventList.add(new Arrival(nextSched[0]-q,tram3));
 
 
-		//to do: aanmaken trams en arrivals
 		while (time<70){
 			tick();
 		}
@@ -228,7 +227,6 @@ class DistributionVariables{
         // Een queue met op elke index-tijd een mini schedule voor de tram (p+r en cs)
         Queue<double[]> arrivaltimes = new LinkedList<double[]>();
        
-        // eerste daluren, dit is nog erg onhandig.....
         double time=0;
        
         while(time<840){
@@ -240,8 +238,6 @@ class DistributionVariables{
             else if (time < 720) time += spitsBetweenTime;
             else time += dalBetweenTime;
         }
-
-        System.out.println(arrivaltimes.peek()[0]);
 
         return arrivaltimes;
     }
