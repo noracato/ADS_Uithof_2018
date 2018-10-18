@@ -1,4 +1,3 @@
-import java.io.PrintStream;
 
 public class Eindhalte extends TramStop{
 	// 0 is 'goed' spoor, 1 is 'slecht' spoor
@@ -7,8 +6,8 @@ public class Eindhalte extends TramStop{
 	private double q;
 	private int numTram = 0;
 	// extra argument q turnaround time
-	public Eindhalte (int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin, PrintStream out, double q){
-		super(id,lambdaArr,probDep,runtimeMu,runtimeVar,runtimeMin, out);
+	public Eindhalte (int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin, double q){
+		super(id,lambdaArr,probDep,runtimeMu,runtimeVar,runtimeMin);
 		this.q=q;
 	}
 
@@ -102,7 +101,7 @@ public class Eindhalte extends TramStop{
 		if (tram.getLocation() !=19) return false;
 		for (int i =0; i<2;i++){
 			if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
+				//out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
 				platform[i]=tram;
 				return true;
 			}			
@@ -113,15 +112,15 @@ public class Eindhalte extends TramStop{
 		this.numTram++;
 		for (int i =0; i<2;i++){
 			if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				// System.out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
+				//out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
 				platform[i].location--;
 				platform[i].setNewSchedule(schedule);
 				super.planDeparture(platform[i],schedule[1]-5);
-				return new Arrival(schedule[1],platform[i]);
+				return new Arrival(schedule[1]-5,platform[i]);
 			}			
 		}
-		out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
+		//out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
 		Tram newTram = new Tram((int)schedule[1],schedule);
-		return new Arrival(schedule[1],newTram);
+		return new Arrival(schedule[1]-5,newTram);
 	}
 }

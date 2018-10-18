@@ -20,9 +20,9 @@ CLASSES = \
 		_source/Arrival.java \
 		_source/Departure.java \
 		_source/ArrivalUithof.java \
+		_source/Statistics.java \
 		_source/TramStop.java \
 		_source/Eindhalte.java \
-		_source/Statistics.java \
 		_source/Main.java 
 
 default: classes
