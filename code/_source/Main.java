@@ -47,7 +47,7 @@ class UithoflijnSim{
           e.printStackTrace();
         }
 
-        tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q, out);
+        tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand.csv", q, out);
 
         double[] nextSched = schedules.poll();
         while (nextSched!=null){
@@ -113,9 +113,9 @@ class UithoflijnSim{
         System.out.println();
         System.out.println("-----------"+time+"-----------");
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+//", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
-                " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime+
-                ", at time: "+tramstop.timeMaxWait);
+            System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving);//+
+                // " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime+
+                // ", at time: "+tramstop.timeMaxWait);
         }
     }
 
