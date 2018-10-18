@@ -7,6 +7,8 @@ import java.util.Deque;
 import java.util.Queue; 
 import java.lang.Math;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 class TramStop{
@@ -86,7 +88,11 @@ class TramStop{
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
 			queueTram.addLast(tram);
-			//if (queueTram.size()>2) System.out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+"-----------------------------------------------------------------------");
+
+			// if (queueTram.size()>2) {
+			// 	out.print("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+" IN QUEUE: ");
+			// 	printQueue();
+			// }
 			return false;
 		}
 		//tramstop available, schedule departure
@@ -133,5 +139,12 @@ class TramStop{
 	public Statistics getStats(){
 		return stats;
 	}
+	// public void printQueue(){
+	// 	List<Tram> temp = new ArrayList(queueTram);
+	// 	for (Tram trammie : temp){
+	// 		out.print(trammie.id+" ");
+	// 	}
+	// 	out.println("-----------------------");
+	// }
 }
 

@@ -35,7 +35,7 @@ class Statistics{
 		totRuns++;
 	}
 	public double getAverageDelayTime(){
-		return totDelay/numDelays;
+		return totDelay/totRuns;
 	}
 	public double getFractionDelayedRuns(){
 		return numDelays/totRuns;

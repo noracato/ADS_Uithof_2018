@@ -22,8 +22,10 @@ public class Eindhalte extends TramStop{
 
 		if (!this.serverIdle(tram) && !this.backToStart(tram)){
 				queueTram.addLast(tram);
-				if (queueTram.size()>=2) System.out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+"-----------------------------------------------------------------------");
-
+				// if (queueTram.size()>=2){
+				// 	out.print("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+" IN QUEUE: ");
+				// 	printQueue();
+				// }
 				//System.out.println("LAATSTE in rij voor stop "+id+": tram "+tram.id);
 				return null;
 		}

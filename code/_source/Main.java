@@ -47,6 +47,7 @@ class UithoflijnSim{
 
         tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
 
+
         double[] nextSched = schedules.poll();
         Tram firstTram = new Tram(0,nextSched);
         firstTram.setLocation();
@@ -122,6 +123,7 @@ class UithoflijnSim{
                 out.println("tramstop: "+tramstop.id+", total arriving: "+stats.totPassengers+", total leaving: "+stats.totLeaving+
                 ", maxQueueLength: "+stats.maxQueuePassenger+", at time "+stats.timeMaxPassQueue+", maxWaitingTime: "+stats.maxWaitingTime+
                 ", at time: "+stats.timeMaxWait+", average tram delay: "+stats.getAverageDelayTime()+", fraction of runs delayed: "+stats.getFractionDelayedRuns());
+
         }
     }
 
