@@ -41,47 +41,47 @@ class TramStop{
 			tram.setLocation();
 			timeEvent = Math.max(timeEvent, timeLastDeparture+(double)2/3);
 
-			this.generatePassengers(timeEvent);
 
 			int numPassengers = tram.getNumPassengers();
 			int timeSlot = timeSlot(timeEvent);
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
 			this.totLeaving+=passOut;
+
 			int passIn = 0;
-			if (!queuePassengers.isEmpty() && !tram.waitingAtPR){
-				double waitTime = timeEvent - queuePassengers.peek();
-				if (maxWaitingTime < waitTime){
-					maxWaitingTime = waitTime;
-					timeMaxWait = timeEvent;
-				}
-				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
-			}
-			double dwellTime = dwellTime(passIn, passOut);
-
-			// extra passengers:
-			double departureTime = timeEvent+dwellTime;
 			int passExtra = 0;
-			this.generatePassengers(departureTime);
-			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
-				passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);	
-				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
-			}
+			double departureTime = timeEvent;
+			if (!tram.waitingAtPR){
+				this.generatePassengers(timeEvent);
+				if (!queuePassengers.isEmpty()){
+					double waitTime = timeEvent - queuePassengers.peek();
+					if (maxWaitingTime < waitTime){
+						maxWaitingTime = waitTime;
+						timeMaxWait = timeEvent;
+					}
+					passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
+				}
 
+				// extra passengers:
+				departureTime += dwellTime(passIn, passOut);
+				this.generatePassengers(departureTime);
+				if (!queuePassengers.isEmpty()){
+					passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);	
+					if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
+				}
+
+				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+					double vertraging = departureTime - tram.scheduledDeparture();
+					if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
+				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
+				}
+			}
+			
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
 			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
-
-			// trammertje kijkt of het te laat is
-			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
-				double vertraging = departureTime - tram.scheduledDeparture();
-				if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
-			 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
-			}
-
-
 
 			return new Departure(departureTime, tram);
 		
