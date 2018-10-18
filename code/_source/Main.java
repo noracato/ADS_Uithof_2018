@@ -41,13 +41,14 @@ class UithoflijnSim{
             nextSched = schedules.poll();
         }
 
+        int print = 0;
 		//to do: aanmaken trams en arrivals
-		while (time<1000){
-			if(tick()) break;
-            if(time < 61 && time > 60) accTotPass();
-            else if(time < 181 && time > 189) accTotPass();
-            else if(time < 601 && time > 600) accTotPass();
-            else if(time < 721 && time > 720) accTotPass();
+		while (!eventList.isEmpty()){
+            tick();
+            if(time > 60 && print == 0) {accTotPass(); print++;}
+            else if(time > 180 && print == 1) {accTotPass(); print++;}
+            else if(time > 600 && print == 2) {accTotPass(); print++;}
+            else if(time > 720 && print == 3) {accTotPass(); print++;}
 		} accTotPass();
         // for (TramStop tramstop : tramstops){
         //     System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
@@ -56,17 +57,16 @@ class UithoflijnSim{
 	}
 
     private void accTotPass(){
-        System.out.println(time);
+        System.out.println();
+        System.out.println("-----------"+time+"-----------");
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving);
-                // + " max. queueLength: "+tramstop.maxQueueLength+", maxwaiting time: "+tramstop.maxWaitingTime);
+            System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving
+                + " max. queueLength: "+tramstop.maxQueueLength+", maxwaiting time: "+tramstop.maxWaitingTime);
         }
     }
 
-	private boolean tick(){
+	private void tick(){
 		Event nextEvent = eventList.poll();
-        while(nextEvent==null && eventList.size() > 0) nextEvent = eventList.poll();
-        if (eventList.size() == 0) {System.out.println("No more events"); return true;} else{
         time = nextEvent.timeEvent;
         Tram tram = nextEvent.tram;
         
@@ -95,10 +95,10 @@ class UithoflijnSim{
             int id = nextEvent.getLocation();
             // System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
+            // if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
             if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
 
-		} return false;}
+		}
 
 	}
 

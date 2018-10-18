@@ -63,18 +63,18 @@ class TramStop{
 				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
 			}
 
-			if(id==10)System.out.println(queuePassengers.size()+ " in de rij");
+			// if(id==10)System.out.println(queuePassengers.size()+ " in de rij");
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
+			// System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
 			// trammertje kijkt of het te laat is
 			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
 				double vertraging = departureTime - tram.scheduledDeparture();
-				if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
+				// if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
 			 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 			}
 
