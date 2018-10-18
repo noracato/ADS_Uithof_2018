@@ -77,7 +77,9 @@ class UithoflijnSim{
             eventList.add(newArrival);
         }
 		else if (nextEvent instanceof Departure){
+
             // printState();
+
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers()+", left in queue: "+tramstops[id].queueSizes()[1]);
             tramstops[id].setIdle(tram);
