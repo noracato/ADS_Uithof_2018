@@ -82,6 +82,7 @@ class UithoflijnSim{
 
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers()+", left in queue: "+tramstops[id].queueSizes()[1]);
+            if (tramstops[id].queueSizes()[0]>1) out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+tramstops[id].queueSizes()[0]+"-----------------------------------------------------------------------");
             tramstops[id].setIdle(tram);
             Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
             eventList.add(nextArrival);
@@ -111,7 +112,7 @@ class UithoflijnSim{
         System.out.println();
         System.out.println("-----------"+time+"-----------");
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+//", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
+                out.println("tramstop: "+tramstop.id+//", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
                 " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime+
                 ", at time: "+tramstop.timeMaxWait);
         }
