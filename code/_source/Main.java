@@ -50,10 +50,6 @@ class UithoflijnSim{
             else if(time > 600 && print == 2) {accTotPass(); print++;}
             else if(time > 720 && print == 3) {accTotPass(); print++;}
 		} accTotPass();
-        // for (TramStop tramstop : tramstops){
-        //     System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
-        //         " max. queueLength: "+tramstop.maxQueueLength+", maxwaiting time: "+tramstop.maxWaitingTime);
-        // }
 	}
 
     private void accTotPass(){
@@ -75,8 +71,9 @@ class UithoflijnSim{
             eventList.add(newArrival);
         }
 		else if (nextEvent instanceof Departure){
+            printState();
             int id = nextEvent.getLocation();
-            // System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
+            System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram);
             Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
             eventList.add(nextArrival);
@@ -85,7 +82,7 @@ class UithoflijnSim{
 
             Tram nextTram = tramstops[id % 20].nextTramInQueue();
             if (nextTram!=null){
-                // System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
+                System.out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
                 Departure departure = tramstops[id % 20].planDeparture(nextTram,time);
                 if (!(id==1 && tram.waitingAtPR)) eventList.add(departure);
             }
@@ -93,14 +90,24 @@ class UithoflijnSim{
 		}
 		else {//then nextEvent is Arrival
             int id = nextEvent.getLocation();
-            // System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+            System.out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            // if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
+            if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
             if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
 
 		}
 
 	}
+
+    private void printState(){
+        System.out.println("time = "+time);
+        System.out.format("%15s|%15s|%15s|%15s|\n", "StopID", "Idle", "Q Tram", "Q pass");
+        for (TramStop tramstop : tramstops){
+            int[] queue = tramstop.queueSizes();
+            System.out.format("%15d|%15s|%15d|%15d|\n", tramstop.id, tramstop.idle, queue[0], queue[1]);
+        }
+        System.out.println();
+    }
 
 }
 

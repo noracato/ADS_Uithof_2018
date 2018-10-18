@@ -9,7 +9,7 @@ import java.lang.Math;
 
 class TramStop{
 	public int id;
-	boolean idle = true;
+	public boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
 	double timeLastDeparture = 0;
@@ -69,12 +69,12 @@ class TramStop{
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			// System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
+			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
 			// trammertje kijkt of het te laat is
 			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
 				double vertraging = departureTime - tram.scheduledDeparture();
-				// if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
+				if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
 			 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 			}
 
@@ -96,7 +96,7 @@ class TramStop{
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
 			queueTram.addLast(tram);
-			//System.out.println("in rij voor stop "+id+": tram "+tram.id);
+			// System.out.println("in rij voor stop "+id+": tram "+tram.id);
 			return false;
 		}
 		//tramstop available, schedule departure
@@ -138,6 +138,11 @@ class TramStop{
 	}
 	public void setIdle(Tram tram){
 		this.idle = true;
+	}
+
+	public int[] queueSizes(){
+		int[] queues = {queueTram.size(), queuePassengers.size()};
+		return (queues);
 	}
 }
 
