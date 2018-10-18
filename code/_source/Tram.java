@@ -28,7 +28,6 @@ public class Tram {
 			location = 0;
 			this.waitingAtPR=true;
 		}
-		else if (location>1) this.waitingAtPR = false;
 	}
 
 	// returns time tram is supposed to leave location
@@ -40,5 +39,6 @@ public class Tram {
 	// set a new schedule for the tram
 	public void setNewSchedule(double[] scheduledDep){
 		this.scheduledDep = scheduledDep;
+		this.waitingAtPR = false;
 	}
 }

@@ -48,8 +48,12 @@ class TramStop{
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
 			this.totLeaving+=passOut;
 			int passIn = 0;
-			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
-				maxWaitingTime = Math.max(maxWaitingTime, timeEvent - queuePassengers.peek());
+			if (!queuePassengers.isEmpty() && !tram.waitingAtPR){
+				double waitTime = timeEvent - queuePassengers.peek();
+				if (maxWaitingTime < waitTime){
+					maxWaitingTime = waitTime;
+					timeMaxWait = timeEvent;
+				}
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
@@ -63,7 +67,7 @@ class TramStop{
 				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
 			}
 
-			if(id==10)System.out.println(queuePassengers.size()+ " in de rij");
+			
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
@@ -86,6 +90,7 @@ class TramStop{
 	public Arrival planArrival(double timeEvent, Tram tram){
 
 		double runtime = runtimeDist.sample();
+		if (runtime>runtimeDist.getNumericalMean()+2*runtimeDist.getNumericalVariance()) return planArrival(timeEvent, tram);
 		runtime = Math.max(runtime, runtimeMin);
 		if (id == 4 || id == 9) runtime --; // after switch
 		//System.out.println("niet in de rij: tram "+tram.id+", time: "+timeEvent+", aankomst: "+(timeEvent+runtime));
@@ -96,7 +101,7 @@ class TramStop{
 	public boolean serverIdle(Tram tram){
 		if (!this.idle){
 			queueTram.addLast(tram);
-			//System.out.println("in rij voor stop "+id+": tram "+tram.id);
+			if (queueTram.size()>2) System.out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+"-----------------------------------------------------------------------");
 			return false;
 		}
 		//tramstop available, schedule departure
@@ -108,9 +113,8 @@ class TramStop{
 	} 	
 	private void generatePassengers(double to){
 		double currArrival=timeLastDeparture;
-		while (currArrival<to){
+		while (currArrival<Math.min(to,945)){
 			double nextArrival = getNextPassenger(currArrival);
-
 			if (timeSlot(currArrival)==timeSlot(nextArrival)){
 				currArrival = nextArrival;
 				queuePassengers.add(currArrival);
@@ -134,6 +138,7 @@ class TramStop{
 
 	// in minuten
 	private int timeSlot(double timeEvent){
+		if (timeEvent>960) return 63;
 		return (int)Math.floor(timeEvent/15);
 	}
 	public void setIdle(Tram tram){

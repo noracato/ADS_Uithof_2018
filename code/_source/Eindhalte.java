@@ -21,6 +21,8 @@ public class Eindhalte extends TramStop{
 
 		if (!this.serverIdle(tram) && !this.backToStart(tram)){
 				queueTram.addLast(tram);
+				if (queueTram.size()>=2) System.out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+"-----------------------------------------------------------------------");
+
 				//System.out.println("LAATSTE in rij voor stop "+id+": tram "+tram.id);
 				return null;
 		}
@@ -81,7 +83,7 @@ public class Eindhalte extends TramStop{
 			else platform[1]=null;
 		}
 		if (tram.getLocation()!=id+1 && this.idle==tram) {
-			System.out.println("SWITCH IDLE");
+			//System.out.println("SWITCH IDLE");
 			this.idle=null;
 		}
 	}
@@ -98,7 +100,7 @@ public class Eindhalte extends TramStop{
 	private boolean backToStart(Tram tram){
 		if (tram.getLocation() !=19) return false;
 		for (int i =0; i<2;i++){
-			if (platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+			if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
 				System.out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
 				platform[i]=tram;
 				return true;
@@ -118,7 +120,7 @@ public class Eindhalte extends TramStop{
 			}			
 		}
 		System.out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
-		Tram newTram = new Tram(numTram,schedule);
+		Tram newTram = new Tram((int)schedule[1],schedule);
 		return new Arrival(schedule[1],newTram);
 	}
 }

@@ -10,7 +10,9 @@ import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter ;
 import java.io.IOException;
+import java.io.File;
 //////////////////////////////
  
 
@@ -30,9 +32,10 @@ class UithoflijnSim{
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-    Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 4, 4, time, 180.0);
+    Queue<double[]> schedules = DistributionVariables.schedule(q, 20, 6, 4, time, 930.0);
+ 
 
-	public void run(){
+    public void run(){
 
         double[] nextSched = schedules.poll();
         while (nextSched!=null){
@@ -42,12 +45,13 @@ class UithoflijnSim{
         }
 
 		//to do: aanmaken trams en arrivals
-		while (time<180){
+		while (!eventList.isEmpty()){
 			tick();
 		}
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
-                " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime);
+            System.out.println("tramstop: "+tramstop.id+//", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
+                " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime+
+                ", at time: "+tramstop.timeMaxWait);
         }
 	}
 
@@ -186,8 +190,8 @@ class DistributionVariables{
             arrivaltimes.add(mytimes);
             if(time +dalBetweenTime < 60-st) time += dalBetweenTime;
             else if (time + spitsBetweenTime < 180) time += spitsBetweenTime;
-            else if (time + dayBetweenTime < 600) time += dayBetweenTime;
-            else if (time + spitsBetweenTime < 720-st) time += spitsBetweenTime;
+            else if (time + dayBetweenTime < 600-st) time += dayBetweenTime;
+            else if (time + spitsBetweenTime < 720) time += spitsBetweenTime;
             else time += dalBetweenTime;
         }
 
