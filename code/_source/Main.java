@@ -35,7 +35,7 @@ class UithoflijnSim{
     double q = 5;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
-	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
+	TramStop[] tramstops;
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
 
     Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 4, 4, time, 930.0);
@@ -46,6 +46,8 @@ class UithoflijnSim{
         catch(IOException e) {
           e.printStackTrace();
         }
+
+        tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q, out);
 
         double[] nextSched = schedules.poll();
         while (nextSched!=null){
@@ -138,7 +140,7 @@ class UithoflijnSim{
 class DistributionVariables{
 
 
-	public static TramStop[] getTramStops(String fileName, double q) {
+	public static TramStop[] getTramStops(String fileName, double q, PrintStream out) {
 		TramStop[] tramstops = new TramStop[20];
         String csvFile = fileName;
         BufferedReader br = null;
@@ -168,13 +170,13 @@ class DistributionVariables{
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
                 if (n==0 || n==10){
-                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, q);
+                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, out, q);
                     tramstops[n] = eindhalte;
                     tramstops[n+1] = eindhalte;
                     tramstops[n+2] = eindhalte;
                     n=n+2;
                 }
-                else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);}
+                else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, out);}
               	n++;
 
             }

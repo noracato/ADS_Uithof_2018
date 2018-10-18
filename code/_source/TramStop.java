@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.Deque;
 import java.util.Queue; 
 import java.lang.Math;
+import java.io.PrintStream;
+
 
 class TramStop{
 	public int id;
@@ -25,14 +27,16 @@ class TramStop{
  	public int maxQueueLength=0;
  	public double timeMaxQueue=0;
  	public double timeMaxWait=0;
+ 	PrintStream out;
 
 
-	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
+	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin, PrintStream out){
 		this.id = id;
 		this.lambdaArr = lambdaArr;
 		this.probDep = probDep;
 		this.runtimeMin = runtimeMin;
 		this.runtimeDist  = new LogNormalDistribution(runtimeMu, runtimeVar);
+		this.out = out;
 	}
 	public Departure planDeparture(Tram tram, double timeEvent){
 			//in case tram has to wait for previous tram to depart
@@ -71,7 +75,7 @@ class TramStop{
 
 				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
 					double vertraging = departureTime - tram.scheduledDeparture();
-					if (vertraging>0) System.out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
+					if (vertraging>0) out.println("TRAM "+tram.id+": VERTRAAGD: "+vertraging+" minuten");
 				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 				}
 			}
@@ -81,7 +85,7 @@ class TramStop{
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
+			out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
 			return new Departure(departureTime, tram);
 		
