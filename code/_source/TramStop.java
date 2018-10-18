@@ -12,8 +12,8 @@ class TramStop{
 	boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastDeparture = 60;
-	double timeLastArrival = 60;
+	double timeLastDeparture = 0;
+	double timeLastArrival = 0;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
  	Random rand = new Random(); 
@@ -60,6 +60,8 @@ class TramStop{
 				passExtra = Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);	
 				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
 			}
+
+			if(id==10)System.out.println(queuePassengers.size()+ " in de rij");
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
