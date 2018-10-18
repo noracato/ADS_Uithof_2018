@@ -83,7 +83,6 @@ public class Eindhalte extends TramStop{
 			else platform[1]=null;
 		}
 		if (tram.getLocation()!=id+1 && this.idle==tram) {
-			//System.out.println("SWITCH IDLE");
 			this.idle=null;
 		}
 	}
@@ -112,7 +111,7 @@ public class Eindhalte extends TramStop{
 		this.numTram++;
 		for (int i =0; i<2;i++){
 			if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				System.out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
+				// System.out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
 				platform[i].location--;
 				platform[i].setNewSchedule(schedule);
 				super.planDeparture(platform[i],schedule[1]-5);

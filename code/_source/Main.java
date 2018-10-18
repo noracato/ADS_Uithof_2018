@@ -32,8 +32,8 @@ class UithoflijnSim{
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
 	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-    Queue<double[]> schedules = DistributionVariables.schedule(q, 20, 6, 4, time, 930.0);
- 
+
+    Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 4, 4, time, 930.0);
 
     public void run(){
 
@@ -44,16 +44,27 @@ class UithoflijnSim{
             nextSched = schedules.poll();
         }
 
+        int print = 0;
 		//to do: aanmaken trams en arrivals
 		while (!eventList.isEmpty()){
-			tick();
-		}
+
+            tick();
+            if(time > 60 && print == 0) {accTotPass(); print++;}
+            else if(time > 180 && print == 1) {accTotPass(); print++;}
+            else if(time > 600 && print == 2) {accTotPass(); print++;}
+            else if(time > 720 && print == 3) {accTotPass(); print++;}
+		} accTotPass();
+	}
+
+    private void accTotPass(){
+        System.out.println();
+        System.out.println("-----------"+time+"-----------");
         for (TramStop tramstop : tramstops){
             System.out.println("tramstop: "+tramstop.id+//", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
                 " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime+
                 ", at time: "+tramstop.timeMaxWait);
         }
-	}
+    }
 
 	private void tick(){
 		Event nextEvent = eventList.poll();
@@ -65,6 +76,7 @@ class UithoflijnSim{
             eventList.add(newArrival);
         }
 		else if (nextEvent instanceof Departure){
+            printState();
             int id = nextEvent.getLocation();
             System.out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers());
             tramstops[id].setIdle(tram);
@@ -91,6 +103,16 @@ class UithoflijnSim{
 		}
 
 	}
+
+    private void printState(){
+        System.out.println("time = "+time);
+        System.out.format("%15s|%15s|%15s|%15s|\n", "StopID", "Idle", "Q Tram", "Q pass");
+        for (TramStop tramstop : tramstops){
+            int[] queue = tramstop.queueSizes();
+            System.out.format("%15d|%15s|%15d|%15d|\n", tramstop.id, tramstop.idle, queue[0], queue[1]);
+        }
+        System.out.println();
+    }
 
 }
 

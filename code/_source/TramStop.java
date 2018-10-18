@@ -9,7 +9,7 @@ import java.lang.Math;
 
 class TramStop{
 	public int id;
-	boolean idle = true;
+	public boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
 	double timeLastDeparture = 0;
@@ -67,7 +67,6 @@ class TramStop{
 				if (tram.getLocation() != 11) departureTime += dwellTime(passExtra, 0);
 			}
 
-			
 
 			tram.addPassengers(passIn+passExtra-passOut);
 			for (int i=0;i<passIn+passExtra;i++){
@@ -143,6 +142,11 @@ class TramStop{
 	}
 	public void setIdle(Tram tram){
 		this.idle = true;
+	}
+
+	public int[] queueSizes(){
+		int[] queues = {queueTram.size(), queuePassengers.size()};
+		return (queues);
 	}
 }
 
