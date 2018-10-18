@@ -25,7 +25,7 @@ public class Main{
 
 class UithoflijnSim{
 	//Exercise parameters
-	double time = 60;
+	double time = 0;
     double q = 5;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
@@ -50,6 +50,7 @@ class UithoflijnSim{
 
         double[] nextSched = schedules.poll();
         while (nextSched!=null){
+            System.out.println("planned departure at: "+nextSched[1]);
             eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched));
             nextSched = schedules.poll();
         }
@@ -62,7 +63,7 @@ class UithoflijnSim{
 		}
         for (TramStop tramstop : tramstops){
             System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving+
-                " max. queueLength: "+tramstop.maxQueueLength+", maxwaiting time: "+tramstop.maxWaitingTime);
+                " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime);
         }
 	}
 	private void tick(){
@@ -246,10 +247,10 @@ class DistributionVariables{
                 mytimes[i]=time+scheduledDepStops[i];
             }
             arrivaltimes.add(mytimes);
-            if(time < 60) time += dalBetweenTime;
-            else if (time < 180) time += spitsBetweenTime;
-            else if (time < 600) time += dayBetweenTime;
-            else if (time < 720) time += spitsBetweenTime;
+            if(time +dalBetweenTime < 60-st) time += dalBetweenTime;
+            else if (time + spitsBetweenTime < 180) time += spitsBetweenTime;
+            else if (time + dayBetweenTime < 600) time += dayBetweenTime;
+            else if (time + spitsBetweenTime < 720-st) time += spitsBetweenTime;
             else time += dalBetweenTime;
         }
 

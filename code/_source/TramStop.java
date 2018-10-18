@@ -12,8 +12,8 @@ class TramStop{
 	boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
 	Queue<Double> queuePassengers = new LinkedList<Double>();
-	double timeLastDeparture = 60;
-	double timeLastArrival = 60;
+	double timeLastDeparture = 0;
+	double timeLastArrival = 0;
 	double[] lambdaArr = new double[64];
 	double[] probDep = new double[64];
  	Random rand = new Random(); 
@@ -23,6 +23,8 @@ class TramStop{
  	public int totLeaving = 0;
  	public double maxWaitingTime=0;
  	public int maxQueueLength=0;
+ 	public double timeMaxQueue=0;
+ 	public double timeMaxWait=0;
 
 
 	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
@@ -47,7 +49,7 @@ class TramStop{
 			this.totLeaving+=passOut;
 			int passIn = 0;
 			if (!queuePassengers.isEmpty() && tram.getLocation()!=1){
-				maxWaitingTime = Math.max(maxWaitingTime, queuePassengers.peek());
+				maxWaitingTime = Math.max(maxWaitingTime, timeEvent - queuePassengers.peek());
 				passIn = Math.min(queuePassengers.size(), 420-numPassengers+passOut);
 			}
 			double dwellTime = dwellTime(passIn, passOut);
@@ -65,7 +67,7 @@ class TramStop{
 			for (int i=0;i<passIn+passExtra;i++){
 					queuePassengers.remove();
 				}
-			//System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
+			System.out.println("passengersIn: "+passIn+", passOut: "+ passOut+", passExtra: "+ passExtra+" QUEUE: "+queuePassengers.size());
 
 			// trammertje kijkt of het te laat is
 			if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
@@ -117,6 +119,7 @@ class TramStop{
 			}
 		}
 		maxQueueLength = Math.max(maxQueueLength,queuePassengers.size());
+		timeMaxQueue = to;
 		timeLastDeparture = to;
 	}
 	 private double getNextPassenger(double time) {
