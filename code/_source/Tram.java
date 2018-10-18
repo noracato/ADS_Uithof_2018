@@ -33,12 +33,14 @@ public class Tram {
 	// returns time tram is supposed to leave location
 	public double scheduledDeparture(){
 		// When at endstation (9), change to new time // change this when adding more stops!!
+		if (this.waitingAtPR) return scheduledDep[0];
 		return scheduledDep[location];
 	}
 
 	// set a new schedule for the tram
 	public void setNewSchedule(double[] scheduledDep){
 		this.scheduledDep = scheduledDep;
+		this.id = (int)scheduledDep[1];
 		this.waitingAtPR = false;
 	}
 }

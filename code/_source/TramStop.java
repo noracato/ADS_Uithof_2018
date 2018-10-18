@@ -44,7 +44,6 @@ class TramStop{
 			int passOut = Math.min(new BinomialDistribution(numPassengers,probDep[timeSlot]).sample(),numPassengers);
 
 			int passIn = 0;
-			int passExtra = 0;
 			double departureTime = timeEvent;
 			if (!tram.waitingAtPR){
 
@@ -54,14 +53,13 @@ class TramStop{
 					passIn += Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);
 					departureTime += dwellTime(passIn, passOut);
 					}
-				if (tram.getLocation() == 11 && tram.getLocation() ==1) departureTime -= dwellTime(passExtra, 0);			
+				if (tram.getLocation() == 11 || tram.getLocation() ==1) departureTime -= dwellTime(0, 0);			
 				}				
 
 				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
 				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 				}
 			}
-			if (departureTime > tram.scheduledDeparture()) System.out.println("Vertraging:"+(departureTime - tram.scheduledDeparture()));
 			if (queuePassengers.isEmpty()){
 				stats.adjStats(passIn, passOut, 0, 0, departureTime - tram.scheduledDeparture(), departureTime);
 			}
