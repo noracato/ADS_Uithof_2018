@@ -36,9 +36,7 @@ class UithoflijnSim{
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops;
-	// Arrival[] arrivals = DistributionVariables.getTrams("../input_analysis/_data/tramschedule_punt.csv");
-
-    Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 4, 4, time, 930.0);
+    Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 5, 4, time, 930.0);
 
     public void run(){
 
@@ -47,9 +45,15 @@ class UithoflijnSim{
           e.printStackTrace();
         }
 
-        tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand.csv", q, out);
+        tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
+
 
         double[] nextSched = schedules.poll();
+        Tram firstTram = new Tram(0,nextSched);
+        firstTram.setLocation();
+        eventList.add(new Departure(nextSched[1], firstTram));
+
+        nextSched = schedules.poll();
         while (nextSched!=null){
             out.println("planned departure at: "+nextSched[1]);
             eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched));
@@ -84,6 +88,7 @@ class UithoflijnSim{
 
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers()+", left in queue: "+tramstops[id].queueSizes()[1]);
+            if (tramstops[id].queueSizes()[0]>1) out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+tramstops[id].queueSizes()[0]+"-----------------------------------------------------------------------");
             tramstops[id].setIdle(tram);
             Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
             eventList.add(nextArrival);
@@ -102,7 +107,8 @@ class UithoflijnSim{
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
+            if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
+            //if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
             if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
 
 		}
@@ -113,9 +119,11 @@ class UithoflijnSim{
         System.out.println();
         System.out.println("-----------"+time+"-----------");
         for (TramStop tramstop : tramstops){
-            System.out.println("tramstop: "+tramstop.id+", total arriving: "+tramstop.totPassengers+", total leaving: "+tramstop.totLeaving);//+
-                // " max. queueLength: "+tramstop.maxQueueLength+", at time "+tramstop.timeMaxQueue+", maxwaiting time: "+tramstop.maxWaitingTime+
-                // ", at time: "+tramstop.timeMaxWait);
+            Statistics stats = tramstop.getStats();
+                out.println("tramstop: "+tramstop.id+", total arriving: "+stats.totPassengers+", total leaving: "+stats.totLeaving+
+                ", maxQueueLength: "+stats.maxQueuePassenger+", at time "+stats.timeMaxPassQueue+", maxWaitingTime: "+stats.maxWaitingTime+
+                ", at time: "+stats.timeMaxWait+", average tram delay: "+stats.getAverageDelayTime()+", fraction of runs delayed: "+stats.getFractionDelayedRuns());
+
         }
     }
 
@@ -140,7 +148,7 @@ class UithoflijnSim{
 class DistributionVariables{
 
 
-	public static TramStop[] getTramStops(String fileName, double q, PrintStream out) {
+	public static TramStop[] getTramStops(String fileName, double q) {
 		TramStop[] tramstops = new TramStop[20];
         String csvFile = fileName;
         BufferedReader br = null;
@@ -170,13 +178,13 @@ class DistributionVariables{
                 double minRuntime = Double.parseDouble(timeslotN[131]);
 
                 if (n==0 || n==10){
-                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, out, q);
+                    Eindhalte eindhalte = new Eindhalte(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, q);
                     tramstops[n] = eindhalte;
                     tramstops[n+1] = eindhalte;
                     tramstops[n+2] = eindhalte;
                     n=n+2;
                 }
-                else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime, out);}
+                else {tramstops[n] = new TramStop(n,lambdaArr,probDep,muRuntime, varRuntime, minRuntime);}
               	n++;
 
             }
