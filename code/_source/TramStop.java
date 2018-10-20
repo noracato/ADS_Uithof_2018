@@ -47,19 +47,24 @@ class TramStop{
 
 			int passIn = 0;
 			double departureTime = timeEvent;
-			if (!tram.waitingAtPR){
+			if (!tram.waitingAtPR && timeEvent>0){
 
 				for (int i =0; i<2; i++){
 					this.generatePassengers(departureTime);
 					if (!queuePassengers.isEmpty()){
 					passIn += Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);
-					departureTime += dwellTime(passIn, passOut);
 					}
+					if (tram.id==41 && id==0) System.out.println(i+": "+departureTime);
+					departureTime += dwellTime(passIn, passOut);
+				}
+				if (tram.id==41 && id==0) System.out.println("a: "+departureTime);
 				if (tram.getLocation() == 11 || tram.getLocation() ==1) departureTime -= dwellTime(0, 0);			
-				}				
+							
 
 				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+					if (tram.id==41 && id==0) System.out.println("b: "+departureTime);
 				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
+
 				}
 			}
 			if (queuePassengers.isEmpty()){
@@ -71,8 +76,6 @@ class TramStop{
 			for (int i=0;i<passIn;i++){
 					queuePassengers.remove();
 				}
-
-
 			return new Departure(departureTime, tram);
 		
 	}
@@ -126,7 +129,7 @@ class TramStop{
 
 	// in minuten
 	private int timeSlot(double timeEvent){
-		return Math.min((int)Math.floor(timeEvent/15),63);
+		return Math.max(Math.min((int)Math.floor(timeEvent/15),63),0);
 	}
 	public void setIdle(Tram tram){
 		this.idle = true;
