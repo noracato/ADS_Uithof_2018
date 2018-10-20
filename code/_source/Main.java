@@ -33,10 +33,13 @@ class UithoflijnSim{
 	//Exercise parameters
 	double time = 0;
     double q = 5;
+    int spitsFreq = 15;
+    int dayFreq = 5;
+    int dalFreq = 4;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops;
-    Queue<double[]> schedules = DistributionVariables.schedule(q, 15, 5, 4, time, 930.0);
+    Queue<double[]> schedules = DistributionVariables.schedule(q, spitsFreq, dayFreq, dalFreq, time, 930.0);
 
     public void run(){
 
@@ -114,7 +117,6 @@ class UithoflijnSim{
 		}
 
 	}
-    
     private void accTotPass(){
         System.out.println();
         System.out.println("-----------"+time+"-----------");
