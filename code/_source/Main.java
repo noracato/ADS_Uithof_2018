@@ -102,7 +102,7 @@ class UithoflijnSim{
             if (id==0 && tram.waitingAtPR && schedules.peek()!=null && tram.roundsLeft>0) {tram.setNewSchedule(schedules.poll());
                 out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);}
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            if (departure!=null) out.println("departure planned at: "+departure.timeEvent);
+            //if (departure!=null) out.println("departure planned at: "+departure.timeEvent);
             //if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
             //if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
             if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
