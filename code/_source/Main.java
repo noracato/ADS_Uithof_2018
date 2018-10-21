@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.FileWriter;
 import java.io.PrintStream;
-
+import java.io.FileOutputStream;
 
 
 //////////// csv //////////////
@@ -19,11 +19,31 @@ import java.io.File;
  
 
 public class Main{
+    static PrintStream out;
 	public static void main(String[] args){
-		UithoflijnSim simulation = new UithoflijnSim();
-		simulation.run();
-		
+
+        try {writeIt("bin/out.txt");}
+        catch(IOException e) {
+          e.printStackTrace();
+        }
+        out.println("q  spitsFreq dayFreq dalFreq tramstop totalArriving totalLeaving maxQueueLength time maxWaitingTime time  maxTramDelay time: averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
+
+        for (int q=3;q<6;q++){
+            for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
+                for (int dayFreq=4; dayFreq<6; dayFreq++){
+                    for (int dalFreq=4; dalFreq<8; dalFreq++){
+                        for (int it=0; it<10; it++){
+                            UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
+                            simulation.run();
+                        }
+                    }
+                }
+            }
+        }		
 	}
+    private static void writeIt(String file) throws FileNotFoundException {
+            out = new PrintStream(new FileOutputStream(file, true));
+    }
 }
 
 class UithoflijnSim{
@@ -32,21 +52,25 @@ class UithoflijnSim{
 
 	//Exercise parameters
 	double time = 0;
-    double q = 5;
-    int spitsFreq = 15;
-    int dayFreq = 5;
-    int dalFreq = 4;
+    double q ;
+    int spitsFreq;
+    int dayFreq;
+    int dalFreq;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops;
-    Queue<double[]> schedules = DistributionVariables.schedule(q, spitsFreq, dayFreq, dalFreq, time, 930.0);
-
+    Queue<double[]> schedules;
+    public UithoflijnSim(PrintStream out, double q, int spitsFreq, int dayFreq, int dalFreq){
+        this.out = out;
+        this.q=q;
+        this.spitsFreq=spitsFreq;
+        this.dayFreq=dayFreq;
+        this.dalFreq=dalFreq;
+        this.schedules = DistributionVariables.schedule(q, spitsFreq, dayFreq, dalFreq, time, 930.0);
+    }
     public void run(){
 
-        try {writeIt("bin/out.txt");}
-        catch(IOException e) {
-          e.printStackTrace();
-        }
+
 
         tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand_punt.csv", q);
 
@@ -58,7 +82,7 @@ class UithoflijnSim{
 
         nextSched = schedules.poll();
         while (nextSched!=null){
-            out.println("planned departure at: "+nextSched[1]);
+            //out.println("planned departure at: "+nextSched[1]);
             eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched));
             nextSched = schedules.poll();
         }
@@ -68,13 +92,25 @@ class UithoflijnSim{
 		while (!eventList.isEmpty()){
 
             tick();
-            if(time > 60 && print == 0) {accTotPass(); print++;}
-            else if(time > 180 && print == 1) {accTotPass(); print++;}
-            else if(time > 600 && print == 2) {accTotPass(); print++;}
-            else if(time > 720 && print == 3) {accTotPass(); print++;}
-		} accTotPass(); 
-        
-	}
+            // if(time > 60 && print == 0) {accTotPass(); print++;}
+            // else if(time > 180 && print == 1) {accTotPass(); print++;}
+            // else if(time > 600 && print == 2) {accTotPass(); print++;}
+            // else if(time > 720 && print == 3) {accTotPass(); print++;}
+		} //accTotPass(); 
+        for (TramStop tramstop : tramstops){
+        Statistics stats = tramstop.getStats();
+        if (!tramstop.queuePassengers.isEmpty()) out.println(q+" "+spitsFreq+" "+dayFreq+" "+dalFreq+" "+tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+                " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
+                " "+stats.timeMaxWait+" "+stats.maxDelay+" "+stats.maxDelaytime+
+                " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
+                " "+stats.getFractionDelayedRuns()+" "+tramstop.queuePassengers.size());
+        else out.println(q+" "+spitsFreq+" "+dayFreq+" "+dalFreq+" "+tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+                " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
+                " "+stats.timeMaxWait+" "+stats.maxDelay+" "+stats.maxDelaytime+
+                " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
+                " "+stats.getFractionDelayedRuns()+" "+0);
+        }
+    }
 
 	private void tick(){
 		Event nextEvent = eventList.poll();
@@ -90,8 +126,8 @@ class UithoflijnSim{
             // printState();
 
             int id = nextEvent.getLocation();
-            out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers()+", left in queue: "+tramstops[id].queueSizes()[1]);
-            if (tramstops[id].queueSizes()[0]>1) out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+tramstops[id].queueSizes()[0]+"-----------------------------------------------------------------------");
+            //out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers()+", left in queue: "+tramstops[id].queueSizes()[1]);
+            //if (tramstops[id].queueSizes()[0]>1) out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+tramstops[id].queueSizes()[0]+"-----------------------------------------------------------------------");
             tramstops[id].setIdle(tram);
             Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
             eventList.add(nextArrival);
@@ -100,7 +136,7 @@ class UithoflijnSim{
 
             Tram nextTram = tramstops[id % 20].nextTramInQueue();
             if (nextTram!=null){
-                out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
+                //out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
                 Departure departure = tramstops[id % 20].planDeparture(nextTram,time);
                 if (!(id==1 && tram.waitingAtPR)) eventList.add(departure);
             }
@@ -108,31 +144,28 @@ class UithoflijnSim{
 		}
 		else {//then nextEvent is Arrival
             int id = nextEvent.getLocation();
-            out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+            //out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
+            //if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
             //if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
             if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
 
 		}
 
 	}
-    private void accTotPass(){
-        System.out.println();
-        System.out.println("-----------"+time+"-----------");
-        for (TramStop tramstop : tramstops){
-            Statistics stats = tramstop.getStats();
-                out.println("tramstop: "+tramstop.id+", total arriving: "+stats.totPassengers+", total leaving: "+stats.totLeaving+
-                ", maxQueueLength: "+stats.maxQueuePassenger+", at time "+stats.timeMaxPassQueue+", maxWaitingTime: "+stats.maxWaitingTime+
-                ", at time: "+stats.timeMaxWait+", average tram delay: "+stats.getAverageDelayTime()+", fraction of runs delayed: "+stats.getFractionDelayedRuns());
+    // private void accTotPass(){
+    //     System.out.println();
+    //     System.out.println("-----------"+time+"-----------");
+    //     for (TramStop tramstop : tramstops){
+    //         Statistics stats = tramstop.getStats();
+    //             out.println("tramstop: "+tramstop.id+", total arriving: "+stats.totPassengers+", total leaving: "+stats.totLeaving+
+    //             ", maxQueueLength: "+stats.maxQueuePassenger+", at time "+stats.timeMaxPassQueue+", maxWaitingTime: "+stats.maxWaitingTime+
+    //             ", at time: "+stats.timeMaxWait+", average tram delay: "+stats.getAverageDelayTime()+", fraction of runs delayed: "+stats.getFractionDelayedRuns());
 
-        }
-    }
+    //     }
+    
 
-    private void writeIt(String file)
-        throws IOException {
-            out = new PrintStream(file);
-    }
+
 
     // private void printState(){
     //     System.out.println("time = "+time);

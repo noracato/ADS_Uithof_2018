@@ -15,7 +15,7 @@ class TramStop{
 	public int id;
 	public boolean idle = true;
 	Deque<Tram> queueTram = new LinkedList<Tram>();
-	Queue<Double> queuePassengers = new LinkedList<Double>();
+	public Queue<Double> queuePassengers = new LinkedList<Double>();
 	double timeLastDeparture = 0;
 	double timeLastArrival = 0;
 	double[] lambdaArr = new double[64];
@@ -126,7 +126,7 @@ class TramStop{
 
 	// in minuten
 	private int timeSlot(double timeEvent){
-		return Math.min((int)Math.floor(timeEvent/15),63);
+		return Math.max(Math.min((int)Math.floor(timeEvent/15),63),0);
 	}
 	public void setIdle(Tram tram){
 		this.idle = true;

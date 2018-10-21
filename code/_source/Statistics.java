@@ -9,6 +9,7 @@ class Statistics{
  	//delays
  	public double averageDelay=0;
  	public double maxDelay=0;
+ 	public double maxDelaytime=0;
  	public double totDelay=0;
  	public double numDelays=0;
  	public double totRuns=0;
@@ -27,14 +28,20 @@ class Statistics{
 			this.maxWaitingTime = maxWaitingTime;
 			timeMaxWait = time;
 		}
-		if (delay>0){
+		if (delay>1){
 			this.totDelay += delay;
-			this.maxDelay = Math.max(maxDelay, delay);
+			if (this.maxDelay < delay){
+				this.maxDelay = delay;
+				this.maxDelaytime = time;
+			}
 			numDelays++;
 		}
 		totRuns++;
+	}	
+	public double getAverageDelayTimeDel(){
+		return totDelay/numDelays;
 	}
-	public double getAverageDelayTime(){
+	public double getAverageDelayTimeTot(){
 		return totDelay/totRuns;
 	}
 	public double getFractionDelayedRuns(){
