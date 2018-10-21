@@ -14,17 +14,19 @@ public class Eindhalte extends TramStop{
 	//when going onto platform
 	@Override
 	public Departure planDeparture(Tram tram, double timeEvent){
+
+
+		if (!this.serverIdle(tram) && !this.backToStart(tram)){
+				queueTram.addLast(tram);
+				return null;
+		}
+
 		if (tram.getLocation()==id){//then tram departure on platform
 			if(serverIdle(tram)) return super.planDeparture(tram, timeEvent);
 			else { // als het een nieuwe tram is
 				queueTram.addFirst(tram);
 				return null;
 			}
-		}
-
-		if (!this.serverIdle(tram) && !this.backToStart(tram)){
-				queueTram.addLast(tram);
-				return null;
 		}
 
 		//plan departure from switch

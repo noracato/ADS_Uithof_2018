@@ -100,7 +100,7 @@ class UithoflijnSim{
 		else {//then nextEvent is Arrival
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-            if(id==0) out.println(tramstops[0].platform());
+            if(id==0 || id ==10) out.println(tramstops[id].platform());
             if (id==0 && tram.waitingAtPR && schedules.peek()!=null && tram.roundsLeft>0) {tram.setNewSchedule(schedules.poll());
                 out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);}
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
