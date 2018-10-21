@@ -15,18 +15,15 @@ public class Eindhalte extends TramStop{
 	@Override
 	public Departure planDeparture(Tram tram, double timeEvent){
 		if (tram.getLocation()==id){//then tram departure on platform
-			return super.planDeparture(tram, timeEvent);
+			if(serverIdle(tram)) return super.planDeparture(tram, timeEvent);
+			else { // als het een nieuwe tram is
+				queueTram.addFirst(tram);
+				return null;
+			}
 		}
-
-
 
 		if (!this.serverIdle(tram) && !this.backToStart(tram)){
 				queueTram.addLast(tram);
-				// if (queueTram.size()>=2){
-				// 	out.print("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+" IN QUEUE: ");
-				// 	printQueue();
-				// }
-				//System.out.println("LAATSTE in rij voor stop "+id+": tram "+tram.id);
 				return null;
 		}
 
@@ -40,9 +37,8 @@ public class Eindhalte extends TramStop{
 			if ( tram.getLocation()==id+2 && platform[0]==tram) return new Departure(timeEvent,tram); //instant departure
 			return new Departure(timeEvent+1,tram);
 		}
-		//switch is occupied		
+		//switch is occupied 	
 		queueTram.addFirst(tram);
-		//System.out.println("EERSTE in rij voor stop "+id+": tram "+tram.id);
 		return null;				
 
 	}
@@ -110,6 +106,15 @@ public class Eindhalte extends TramStop{
 		}
 		return false;
 	}
+
+	public String platform(){
+		String platforms = "";
+		if (platform[0]!=null) platforms += "Platform 0: "+platform[0].id+" ";
+		if (platform[1]!=null) platforms += "Platform 1: "+platform[1].id;
+		return (platforms);
+	}
+
+
 	// public Arrival newArrival(double[] schedule){
 	// 	this.numTram++;
 	// 	for (int i =0; i<2;i++){

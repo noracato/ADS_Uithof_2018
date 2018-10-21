@@ -34,9 +34,10 @@ class UithoflijnSim{
 	//Exercise parameters
 	double time = 0;
     double q = 5;
-    int spitsFreq = 15;
-    int dayFreq = 5;
+    int spitsFreq = 12;
+    int dayFreq = 4;
     int dalFreq = 4;
+    int maxRounds = 10;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops;
@@ -73,7 +74,7 @@ class UithoflijnSim{
         if (nextEvent instanceof ArrivalUithof) {
             double[] nextSched = ((ArrivalUithof)nextEvent).getSchedule();
             Tram newTram = new Tram((int)nextSched[1],nextSched, ((ArrivalUithof)nextEvent).numRounds);
-            eventList.add(new Arrival(nextSched[1]-5,newTram));
+            eventList.add(new Arrival(nextSched[1]-5,newTram)); // maar is hier wel plaats voor tram?
         }
 		else if (nextEvent instanceof Departure){
 
@@ -99,6 +100,7 @@ class UithoflijnSim{
 		else {//then nextEvent is Arrival
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+            if(id==0) out.println(tramstops[0].platform());
             if (id==0 && tram.waitingAtPR && schedules.peek()!=null && tram.roundsLeft>0) {tram.setNewSchedule(schedules.poll());
                 out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);}
 			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
@@ -114,23 +116,26 @@ class UithoflijnSim{
         LinkedList<double[]> schedules = DistributionVariables.schedule(q, spitsFreq, dayFreq, dalFreq, time, 930.0);
         PriorityQueue<double[]> newSchedule = new PriorityQueue<double[]>(13, (a,b) -> (int)Math.signum(a[1] - b[1]));
 
-
+        // tram 58 rijdt niet weg!
         for (double[] nextSched : schedules){
             if (newSchedule.contains(nextSched)) continue;
             //System.out.println("planned departure at: "+nextSched[1]);
-            System.out.println("NEW tram departure at: "+nextSched[1]);
+            System.out.print("NEW tram departure at: "+nextSched[1]);
 
             double returntime = nextSched[0];
             int i=0;
             for (double[] schedule : schedules){
                 if (newSchedule.contains(schedule)) continue;
-                if (returntime <= schedule[1]){
+                if (returntime+q <= schedule[1]+0.00000000000001 && schedule[1]-returntime < 20){ //if more than 20 min waiting - go to marshalling yard
                     System.out.println("tram departure at: "+schedule[1]);
                     newSchedule.add(schedule);
                     returntime = schedule[0];
                     i++;
                 }
-            } 
+                if (i == maxRounds) break;
+            }
+            System.out.println(" rounds: "+i);
+
             eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched,i));
          
         }
@@ -260,10 +265,10 @@ class DistributionVariables{
                 mytimes[i]=time+scheduledDepStops[i];
             }
             arrivaltimes.add(mytimes);
-            if(time +dalBetweenTime < 60-st) time += dalBetweenTime;
-            else if (time + spitsBetweenTime < 180) time += spitsBetweenTime;
-            else if (time + dayBetweenTime < 600-st) time += dayBetweenTime;
-            else if (time + spitsBetweenTime < 720) time += spitsBetweenTime;
+            if(time < 60-17) time += dalBetweenTime; // dus hij begint nu zo vroeg met eerder schedulen dat tram 0 al bij het eerste rondje standaard vertraging opbouwt! De betweentimes zijn optimaal gemaakt voor 60 min schedules. nu 60-st!
+            else if (time < 180) time += spitsBetweenTime;
+            else if (time < 600-17) time += dayBetweenTime;
+            else if (time < 720) time += spitsBetweenTime;
             else time += dalBetweenTime;
         }
 

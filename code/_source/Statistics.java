@@ -11,6 +11,7 @@ class Statistics{
  	public double maxDelay=0;
  	public double totDelay=0;
  	public double numDelays=0;
+ 	public double numDelaysOverOne = 0;
  	public double totRuns=0;
 
 
@@ -27,10 +28,15 @@ class Statistics{
 			this.maxWaitingTime = maxWaitingTime;
 			timeMaxWait = time;
 		}
+		// only measure delay at endstations!!
 		if (delay>0){
 			this.totDelay += delay;
 			this.maxDelay = Math.max(maxDelay, delay);
 			numDelays++;
+		}
+		// and measure delays over one minute
+		if (delay>1){
+			numDelaysOverOne ++;
 		}
 		totRuns++;
 	}
@@ -38,7 +44,7 @@ class Statistics{
 		return totDelay/totRuns;
 	}
 	public double getFractionDelayedRuns(){
-		return numDelays/totRuns;
+		return numDelaysOverOne/totRuns;
 	}
 
 }

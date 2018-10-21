@@ -82,7 +82,7 @@ class TramStop{
 	public Arrival planArrival(double timeEvent, Tram tram){
 
 		double runtime = runtimeDist.sample();
-		if (runtime>runtimeDist.getNumericalMean()+2*runtimeDist.getNumericalVariance()) return planArrival(timeEvent, tram);
+		if (runtime>runtimeDist.getNumericalMean()+1.5*runtimeDist.getNumericalVariance()) return planArrival(timeEvent, tram);
 		runtime = Math.max(runtime, runtimeMin);
 		double arrivalTime = Math.max(timeLastArrival,timeEvent+runtime);
 		timeLastArrival = arrivalTime+0.000001;
@@ -141,6 +141,10 @@ class TramStop{
 	}
 	public Statistics getStats(){
 		return stats;
+	}
+
+	public String platform(){
+		return "";
 	}
 	// public void printQueue(){
 	// 	List<Tram> temp = new ArrayList(queueTram);
