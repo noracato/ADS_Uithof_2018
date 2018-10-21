@@ -2,15 +2,17 @@ import java.util.ArrayList;
 
 public class Tram {
 	// Time tram should leave at uithof(0) and cs(1)
-	double[] scheduledDep;
+	public double[] scheduledDep;
 	int numPassengers = 0;
 	public int location = 0;
 	int id;
+	public int roundsLeft;
 	public boolean waitingAtPR=false;
 
-	public Tram(int id, double[] scheduledDep){
+	public Tram(int id, double[] scheduledDep, int rounds){
 		this.id=id;
 		this.scheduledDep = scheduledDep;
+		this.roundsLeft = rounds;
 	}
 	public void addPassengers(int numPassengers)
 	{
@@ -40,7 +42,8 @@ public class Tram {
 	// set a new schedule for the tram
 	public void setNewSchedule(double[] scheduledDep){
 		this.scheduledDep = scheduledDep;
-		this.id = (int)scheduledDep[1];
+		//this.id = (int)scheduledDep[1];
 		this.waitingAtPR = false;
+		this.roundsLeft--;
 	}
 }

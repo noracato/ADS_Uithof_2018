@@ -110,19 +110,19 @@ public class Eindhalte extends TramStop{
 		}
 		return false;
 	}
-	public Arrival newArrival(double[] schedule){
-		this.numTram++;
-		for (int i =0; i<2;i++){
-			if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				//out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
-				platform[i].location--;
-				platform[i].setNewSchedule(schedule);
-				super.planDeparture(platform[i],schedule[1]-5);
-				return new Arrival(schedule[1]-5,platform[i]);
-			}			
-		}
-		//out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
-		Tram newTram = new Tram((int)schedule[1],schedule);
-		return new Arrival(schedule[1]-5,newTram);
-	}
+	// public Arrival newArrival(double[] schedule){
+	// 	this.numTram++;
+	// 	for (int i =0; i<2;i++){
+	// 		if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+	// 			//out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
+	// 			platform[i].location--;
+	// 			platform[i].setNewSchedule(schedule);
+	// 			super.planDeparture(platform[i],schedule[1]-5);
+	// 			return new Arrival(schedule[1]-5,platform[i]);
+	// 		}			
+	// 	}
+	// 	//out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
+	// 	Tram newTram = new Tram((int)schedule[1],schedule);
+	// 	return new Arrival(schedule[1]-5,newTram);
+	// }
 }

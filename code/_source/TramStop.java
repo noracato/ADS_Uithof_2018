@@ -53,12 +53,15 @@ class TramStop{
 					this.generatePassengers(departureTime);
 					if (!queuePassengers.isEmpty()){
 					passIn += Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);
-					departureTime += dwellTime(passIn, passOut);
 					}
+					departureTime += dwellTime(passIn, passOut);
+				}
+
 				if (tram.getLocation() == 11 || tram.getLocation() ==1) departureTime -= dwellTime(0, 0);			
-				}				
+							
 
 				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+					if ((tram.scheduledDeparture()-departureTime)>100) System.out.println("TRAM: "+tram.id+", stop:"+id+", time: "+timeEvent+", schedule: "+tram.scheduledDep[1]);
 				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 				}
 			}
@@ -126,7 +129,7 @@ class TramStop{
 
 	// in minuten
 	private int timeSlot(double timeEvent){
-		return Math.min((int)Math.floor(timeEvent/15),63);
+		return Math.max(Math.min((int)Math.floor(timeEvent/15),63),0);
 	}
 	public void setIdle(Tram tram){
 		this.idle = true;
