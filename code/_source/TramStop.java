@@ -24,7 +24,7 @@ class TramStop{
  	LogNormalDistribution runtimeDist;
  	double runtimeMin;
  	Statistics stats = new Statistics();
-
+ 	public double vertraging=0;
 	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
 		this.id = id;
 		this.lambdaArr = lambdaArr;
@@ -53,20 +53,24 @@ class TramStop{
 					this.generatePassengers(departureTime);
 					if (!queuePassengers.isEmpty()){
 					passIn += Math.min(queuePassengers.size()-passIn, 420-numPassengers+passOut-passIn);
-					departureTime += dwellTime(passIn, passOut);
 					}
+					departureTime += dwellTime(passIn, passOut);
+				}
+
 				if (tram.getLocation() == 11 || tram.getLocation() ==1) departureTime -= dwellTime(0, 0);			
-				}				
+							
 
 				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
+					if ((tram.scheduledDeparture()-departureTime)>100) System.out.println("TRAM: "+tram.id+", stop:"+id+", time: "+timeEvent+", schedule: "+tram.scheduledDep[1]);
 				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 				}
-			}
-			if (queuePassengers.isEmpty()){
+				if (queuePassengers.isEmpty()){
 				stats.adjStats(passIn, passOut, 0, 0, departureTime - tram.scheduledDeparture(), departureTime);
-			}
-			else stats.adjStats(passIn, passOut, queuePassengers.size(), timeEvent - queuePassengers.peek(), departureTime - tram.scheduledDeparture(), departureTime);			
+				}
+				else stats.adjStats(passIn, passOut, queuePassengers.size(), timeEvent - queuePassengers.peek(), departureTime - tram.scheduledDeparture(), departureTime);			
 
+			}
+			vertraging = departureTime - tram.scheduledDeparture();
 			tram.addPassengers(passIn-passOut);
 			for (int i=0;i<passIn;i++){
 					queuePassengers.remove();
@@ -79,7 +83,7 @@ class TramStop{
 	public Arrival planArrival(double timeEvent, Tram tram){
 
 		double runtime = runtimeDist.sample();
-		if (runtime>runtimeDist.getNumericalMean()+2*runtimeDist.getNumericalVariance()) return planArrival(timeEvent, tram);
+		if (runtime>runtimeDist.getNumericalMean()+1.5*runtimeDist.getNumericalVariance()) return planArrival(timeEvent, tram);
 		runtime = Math.max(runtime, runtimeMin);
 		double arrivalTime = Math.max(timeLastArrival,timeEvent+runtime);
 		timeLastArrival = arrivalTime+0.000001;
@@ -138,6 +142,10 @@ class TramStop{
 	}
 	public Statistics getStats(){
 		return stats;
+	}
+
+	public String platform(){
+		return "";
 	}
 	// public void printQueue(){
 	// 	List<Tram> temp = new ArrayList(queueTram);

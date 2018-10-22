@@ -14,20 +14,19 @@ public class Eindhalte extends TramStop{
 	//when going onto platform
 	@Override
 	public Departure planDeparture(Tram tram, double timeEvent){
-		if (tram.getLocation()==id){//then tram departure on platform
-			return super.planDeparture(tram, timeEvent);
+
+
+		if (!this.serverIdle(tram)){
+				queueTram.addLast(tram);
+				return null;
 		}
 
-
-
-		if (!this.serverIdle(tram) && !this.backToStart(tram)){
-				queueTram.addLast(tram);
-				// if (queueTram.size()>=2){
-				// 	out.print("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+queueTram.size()+" IN QUEUE: ");
-				// 	printQueue();
-				// }
-				//System.out.println("LAATSTE in rij voor stop "+id+": tram "+tram.id);
+		if (tram.getLocation()==id){//then tram departure on platform
+			if(serverIdle(tram)) return super.planDeparture(tram, timeEvent);
+			else { // als het een nieuwe tram is
+				queueTram.addFirst(tram);
 				return null;
+			}
 		}
 
 		//plan departure from switch
@@ -40,9 +39,8 @@ public class Eindhalte extends TramStop{
 			if ( tram.getLocation()==id+2 && platform[0]==tram) return new Departure(timeEvent,tram); //instant departure
 			return new Departure(timeEvent+1,tram);
 		}
-		//switch is occupied		
+		//switch is occupied 	
 		queueTram.addFirst(tram);
-		//System.out.println("EERSTE in rij voor stop "+id+": tram "+tram.id);
 		return null;				
 
 	}
@@ -99,30 +97,39 @@ public class Eindhalte extends TramStop{
 		if (tram !=null && serverIdle(tram) && (this.idle==null || switchAvailable(tram))) return queueTram.poll();
 		return null;
 	}
-	private boolean backToStart(Tram tram){
-		if (tram.getLocation() !=19) return false;
-		for (int i =0; i<2;i++){
-			if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				//out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
-				platform[i]=tram;
-				return true;
-			}			
-		}
-		return false;
+	// private boolean backToStart(Tram tram){
+	// 	if (tram.getLocation() !=19) return false;
+	// 	for (int i =0; i<2;i++){
+	// 		if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+	// 			//out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
+	// 			platform[i]=tram;
+	// 			return true;
+	// 		}			
+	// 	}
+	// 	return false;
+	// }
+
+	public String platform(){
+		String platforms = "";
+		if (platform[0]!=null) platforms += "Platform 0: "+platform[0].id+" ";
+		if (platform[1]!=null) platforms += "Platform 1: "+platform[1].id;
+		return (platforms);
 	}
-	public Arrival newArrival(double[] schedule){
-		this.numTram++;
-		for (int i =0; i<2;i++){
-			if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				//out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
-				platform[i].location--;
-				platform[i].setNewSchedule(schedule);
-				super.planDeparture(platform[i],schedule[1]-5);
-				return new Arrival(schedule[1]-5,platform[i]);
-			}			
-		}
-		//out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
-		Tram newTram = new Tram((int)schedule[1],schedule);
-		return new Arrival(schedule[1]-5,newTram);
-	}
+
+
+	// public Arrival newArrival(double[] schedule){
+	// 	this.numTram++;
+	// 	for (int i =0; i<2;i++){
+	// 		if (platform[i]!=null && platform[i].getLocation()==1 && platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+	// 			//out.println("Tram "+platform[i].id+" rescheduled for new departure on P&R");
+	// 			platform[i].location--;
+	// 			platform[i].setNewSchedule(schedule);
+	// 			super.planDeparture(platform[i],schedule[1]-5);
+	// 			return new Arrival(schedule[1]-5,platform[i]);
+	// 		}			
+	// 	}
+	// 	//out.println("NEW tram "+(int)schedule[1]+" scheduled at "+schedule[1]+" to depart on P&R");
+	// 	Tram newTram = new Tram((int)schedule[1],schedule);
+	// 	return new Arrival(schedule[1]-5,newTram);
+	// }
 }

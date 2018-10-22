@@ -12,6 +12,7 @@ class Statistics{
  	public double maxDelaytime=0;
  	public double totDelay=0;
  	public double numDelays=0;
+ 	public double numDelaysOverOne = 0;
  	public double totRuns=0;
 
 
@@ -28,6 +29,7 @@ class Statistics{
 			this.maxWaitingTime = maxWaitingTime;
 			timeMaxWait = time;
 		}
+		// only measure delay at endstations!!
 		if (delay>1){
 			this.totDelay += delay;
 			if (this.maxDelay < delay){
@@ -36,6 +38,8 @@ class Statistics{
 			}
 			numDelays++;
 		}
+		// and measure delays over one minute
+
 		totRuns++;
 	}	
 	public double getAverageDelayTimeDel(){
