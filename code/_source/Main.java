@@ -29,22 +29,18 @@ public class Main{
         }
         out.println("q  spitsFreq dayFreq dalFreq tramstop totalArriving totalLeaving maxQueueLength time maxWaitingTime time  maxTramDelay time: averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
 
-        // for (int q=3;q<6;q++){
-        //     for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
-        //         for (int dayFreq=4; dayFreq<6; dayFreq++){
-        //             for (int dalFreq=4; dalFreq<8; dalFreq++){
-        //                 for (int it=0; it<10; it++){
-        double q = 5.0;
-        int spitsFreq = 12;
-        int dayFreq = 4;
-        int dalFreq = 4;
+        for (int q=3;q<6;q++){
+            for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
+                for (int dayFreq=4; dayFreq<8; dayFreq++){
+                    for (int dalFreq=4; dalFreq<8; dalFreq++){
+                        for (int it=0; it<10; it++){
                             UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
                             simulation.run();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }		
+                        }
+                    }
+                }
+            }
+        }		
 	}
     private static void writeIt(String file) throws FileNotFoundException {
             out = new PrintStream(new FileOutputStream(file, true));
@@ -137,7 +133,7 @@ class UithoflijnSim{
 
             Tram nextTram = tramstops[id % 20].nextTramInQueue();
             if (nextTram!=null){
-                out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
+                //out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
                 this.departureEvent(nextTram);
             }
 			
@@ -145,7 +141,7 @@ class UithoflijnSim{
 		else {//then nextEvent is Arrival
             int id = nextEvent.getLocation();
 
-            out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
+            //out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
             this.departureEvent(tram);
 		}
 
@@ -168,11 +164,11 @@ class UithoflijnSim{
             if (loc==0 && tram.waitingAtPR) {
                 if (schedules.peek()!=null && tram.roundsLeft>0){
                     tram.setNewSchedule(schedules.poll());
-                    out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);
+                    //out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);
                 }
             }
             Departure departure = tramstops[(loc+1) %20].planDeparture(tram,time);
-            out.println("VERTRAGING: "+tramstops[(loc+1) %20].vertraging);
+            //out.println("VERTRAGING: "+tramstops[(loc+1) %20].vertraging);
 
             //if (departure!=null) out.println("departure planned at: "+departure.timeEvent);
             //if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
@@ -188,7 +184,7 @@ class UithoflijnSim{
             double[] nextSched = schedules.poll();
             if (newSchedule.contains(nextSched)) continue;
             //System.out.println("planned departure at: "+nextSched[1]);
-            System.out.print("NEW tram departure at: "+nextSched[1]);
+            //System.out.print("NEW tram departure at: "+nextSched[1]);
 
             double returntime = nextSched[0];
             int i=0;
@@ -196,14 +192,14 @@ class UithoflijnSim{
                 if (newSchedule.contains(schedule)) continue;
                 if ((nextSched[1]+17+q>60 && returntime>180) || (nextSched[1]+17+q>600 && returntime>720)) break;
                 if (returntime+q+4 <= schedule[1]){//schedule[1]-returntime < 20){ //if more than 20 min waiting - go to marshalling yard
-                    System.out.println("tram departure at: "+schedule[1]);
+                    //System.out.println("tram departure at: "+schedule[1]);
                     newSchedule.add(schedule);
                     returntime = schedule[0];
                     i++;
                 }
                 //if (i == maxRounds) break;
             }
-            System.out.println(" rounds: "+i);
+            //System.out.println(" rounds: "+i);
             if (nextSched[1]<43-q || (nextSched[1]>180 && nextSched[1]<583-q) || nextSched[1]>720) i++;
 
             eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched,i));

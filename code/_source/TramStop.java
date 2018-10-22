@@ -24,7 +24,7 @@ class TramStop{
  	LogNormalDistribution runtimeDist;
  	double runtimeMin;
  	Statistics stats = new Statistics();
- 	public double vertraging=0;
+
 	public TramStop(int id, double[] lambdaArr, double[] probDep, double runtimeMu, double runtimeVar, double runtimeMin){
 		this.id = id;
 		this.lambdaArr = lambdaArr;
@@ -61,7 +61,7 @@ class TramStop{
 							
 
 				if (timeSlot<4 || (timeSlot>11 && timeSlot <40) || timeSlot > 47){
-					if ((tram.scheduledDeparture()-departureTime)>100) System.out.println("TRAM: "+tram.id+", stop:"+id+", time: "+timeEvent+", schedule: "+tram.scheduledDep[1]);
+					//if ((tram.scheduledDeparture()-departureTime)>100) System.out.println("TRAM: "+tram.id+", stop:"+id+", time: "+timeEvent+", schedule: "+tram.scheduledDep[1]);
 				 	departureTime = Math.max(departureTime, tram.scheduledDeparture());
 				}
 				if (queuePassengers.isEmpty()){
@@ -70,7 +70,7 @@ class TramStop{
 				else stats.adjStats(passIn, passOut, queuePassengers.size(), timeEvent - queuePassengers.peek(), departureTime - tram.scheduledDeparture(), departureTime);			
 
 			}
-			vertraging = departureTime - tram.scheduledDeparture();
+			else {departureTime += new GammaDistribution(2, 0.4*(12.5+0.13*passOut)).sample()/60;}
 			tram.addPassengers(passIn-passOut);
 			for (int i=0;i<passIn;i++){
 					queuePassengers.remove();
