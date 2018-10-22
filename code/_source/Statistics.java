@@ -29,22 +29,20 @@ class Statistics{
 			timeMaxWait = time;
 		}
 		// only measure delay at endstations!!
-		if (delay>0){
+		if (delay>1){
 			this.totDelay += delay;
 			this.maxDelay = Math.max(maxDelay, delay);
 			numDelays++;
 		}
 		// and measure delays over one minute
-		if (delay>1){
-			numDelaysOverOne ++;
-		}
+
 		totRuns++;
 	}
 	public double getAverageDelayTime(){
 		return totDelay/totRuns;
 	}
 	public double getFractionDelayedRuns(){
-		return numDelaysOverOne/totRuns;
+		return numDelays/totRuns;
 	}
 
 }

@@ -16,7 +16,7 @@ public class Eindhalte extends TramStop{
 	public Departure planDeparture(Tram tram, double timeEvent){
 
 
-		if (!this.serverIdle(tram) && !this.backToStart(tram)){
+		if (!this.serverIdle(tram)){
 				queueTram.addLast(tram);
 				return null;
 		}
@@ -97,17 +97,17 @@ public class Eindhalte extends TramStop{
 		if (tram !=null && serverIdle(tram) && (this.idle==null || switchAvailable(tram))) return queueTram.poll();
 		return null;
 	}
-	private boolean backToStart(Tram tram){
-		if (tram.getLocation() !=19) return false;
-		for (int i =0; i<2;i++){
-			if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
-				//out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
-				platform[i]=tram;
-				return true;
-			}			
-		}
-		return false;
-	}
+	// private boolean backToStart(Tram tram){
+	// 	if (tram.getLocation() !=19) return false;
+	// 	for (int i =0; i<2;i++){
+	// 		if (platform[i].getNumPassengers()==0 && platform[i].waitingAtPR){
+	// 			//out.println("Tram "+platform[i].id+" naar rangeerterrein. Tram "+tram.id+"op P&R");
+	// 			platform[i]=tram;
+	// 			return true;
+	// 		}			
+	// 	}
+	// 	return false;
+	// }
 
 	public String platform(){
 		String platforms = "";

@@ -37,7 +37,7 @@ class UithoflijnSim{
     int spitsFreq = 12;
     int dayFreq = 4;
     int dalFreq = 4;
-    int maxRounds = 10;
+    //int maxRounds = 10;
 
 	PriorityQueue<Event> eventList = new PriorityQueue<Event>(13, (a,b) -> (int)Math.signum(a.timeEvent - b.timeEvent));
 	TramStop[] tramstops;
@@ -74,6 +74,7 @@ class UithoflijnSim{
         if (nextEvent instanceof ArrivalUithof) {
             double[] nextSched = ((ArrivalUithof)nextEvent).getSchedule();
             Tram newTram = new Tram((int)nextSched[1],nextSched, ((ArrivalUithof)nextEvent).numRounds);
+            out.println("NEW TRAM: "+newTram.id+", arrival at: 0, numRounds: "+newTram.roundsLeft);
             eventList.add(new Arrival(nextSched[1]-5,newTram)); // maar is hier wel plaats voor tram?
         }
 		else if (nextEvent instanceof Departure){
@@ -83,41 +84,57 @@ class UithoflijnSim{
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", departure at: "+id+" , time: "+time+" ,passengers: "+tram.getNumPassengers()+", left in queue: "+tramstops[id].queueSizes()[1]);
             if (tramstops[id].queueSizes()[0]>1) out.println("----------------------------------------------------QUEUE AT STOP: "+id+" OF SIZE "+tramstops[id].queueSizes()[0]+"-----------------------------------------------------------------------");
+            if (id==1 && tram.waitingAtPR) {
+                tram.setLocation();
+                out.println("to rangeerterrein: "+tram.id); 
+
+            }
             tramstops[id].setIdle(tram);
-            Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
-            eventList.add(nextArrival);
-            
-            
+            if (!(id==1 && tram.waitingAtPR)) {
+                Arrival nextArrival = tramstops[(id+1) % 20].planArrival(time, tram);
+                eventList.add(nextArrival);                
+            }            
 
             Tram nextTram = tramstops[id % 20].nextTramInQueue();
             if (nextTram!=null){
                 out.println("TRAM: "+nextTram.id+" DELAYED arrival at: "+(nextTram.getLocation()+1)+" , time: "+time+" ,passengers: "+nextTram.getNumPassengers());
-                Departure departure = tramstops[id % 20].planDeparture(nextTram,time);
-                if (!(id==1 && tram.waitingAtPR)) eventList.add(departure);
+                this.departureEvent(nextTram);
+
             }
 			
 		}
 		else {//then nextEvent is Arrival
             int id = nextEvent.getLocation();
             out.println("TRAM: "+tram.id+", arrival at: "+(id+1)+" , time: "+time+" ,passengers: "+nextEvent.tram.getNumPassengers());
-            if(id==0 || id ==10) out.println(tramstops[id].platform());
-            if (id==0 && tram.waitingAtPR && schedules.peek()!=null && tram.roundsLeft>0) {tram.setNewSchedule(schedules.poll());
-                out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);}
-			Departure departure = tramstops[(id+1) %20].planDeparture(tram,time);
-            //if (departure!=null) out.println("departure planned at: "+departure.timeEvent);
-            //if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
-            //if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
-            if (departure!=null && !(tram.getLocation()==1 && tram.waitingAtPR)) eventList.add(departure);
+            this.departureEvent(tram);
 
 		}
 
 	}
+    private void departureEvent(Tram tram){
+            //if(id==0 || id ==10) out.println(tramstops[id].platform());
+            int loc = tram.getLocation();
+            if (loc==0 && tram.waitingAtPR) {
+                if (schedules.peek()!=null && tram.roundsLeft>0){
+                    tram.setNewSchedule(schedules.poll());
+                    out.println("new Schedule to depart at: "+tram.scheduledDep[1]+"back at: "+tram.scheduledDep[0]);
+                }
+            }
+            Departure departure = tramstops[(loc+1) %20].planDeparture(tram,time);
+            out.println("VERTRAGING: "+tramstops[(loc+1) %20].vertraging);
+
+            //if (departure!=null) out.println("departure planned at: "+departure.timeEvent);
+            //if (departure != null && departure.getTime() > tram.scheduledDeparture()) out.println("VERTRAGING: "+(departure.getTime() - tram.scheduledDeparture())+" minuten");
+            //if (tram.waitingAtPR && tram.getLocation()==1) System.out.println("Waiting at P&R at time "+time+", tram "+tram.id);
+            if (departure!=null) eventList.add(departure);
+    }
     private PriorityQueue<double[]> getSchedule(){
         LinkedList<double[]> schedules = DistributionVariables.schedule(q, spitsFreq, dayFreq, dalFreq, time, 930.0);
         PriorityQueue<double[]> newSchedule = new PriorityQueue<double[]>(13, (a,b) -> (int)Math.signum(a[1] - b[1]));
 
         // tram 58 rijdt niet weg!
-        for (double[] nextSched : schedules){
+        while (!schedules.isEmpty()){
+            double[] nextSched = schedules.poll();
             if (newSchedule.contains(nextSched)) continue;
             //System.out.println("planned departure at: "+nextSched[1]);
             System.out.print("NEW tram departure at: "+nextSched[1]);
@@ -126,15 +143,17 @@ class UithoflijnSim{
             int i=0;
             for (double[] schedule : schedules){
                 if (newSchedule.contains(schedule)) continue;
-                if (returntime+q <= schedule[1]+0.00000000000001 && schedule[1]-returntime < 20){ //if more than 20 min waiting - go to marshalling yard
+                if ((nextSched[1]+17+q>60 && returntime>180) || (nextSched[1]+17+q>600 && returntime>720)) break;
+                if (returntime+q+4 <= schedule[1]){//schedule[1]-returntime < 20){ //if more than 20 min waiting - go to marshalling yard
                     System.out.println("tram departure at: "+schedule[1]);
                     newSchedule.add(schedule);
                     returntime = schedule[0];
                     i++;
                 }
-                if (i == maxRounds) break;
+                //if (i == maxRounds) break;
             }
             System.out.println(" rounds: "+i);
+            if (nextSched[1]<43-q || (nextSched[1]>180 && nextSched[1]<583-q) || nextSched[1]>720) i++;
 
             eventList.add(new ArrivalUithof(nextSched[1]-5, nextSched,i));
          
