@@ -28,7 +28,7 @@ public class Eindhalte extends TramStop{
 				return null;
 			}
 		}
-
+		
 		//plan departure from switch
 		//set switch to false
 		if (this.idle==null || switchAvailable(tram)){
