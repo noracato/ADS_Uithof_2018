@@ -23,7 +23,7 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out6.txt");}
+        try {writeIt("bin/out25.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
@@ -75,7 +75,7 @@ class UithoflijnSim{
 
 
 
-        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees6_punt.csv", q);
+        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees25_punt.csv", q);
 
         int print = 0;
 		//to do: aanmaken trams en arrivals
