@@ -30,9 +30,9 @@ public class Main{
         out.println("q  spitsFreq dayFreq dalFreq tramstop totalArriving totalLeaving maxQueueLength time maxWaitingTime time  maxTramDelay time: averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
 
         for (int q=3;q<6;q++){
-            for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
-                for (int dayFreq=8; dayFreq<14; dayFreq++){
-                    for (int dalFreq=7; dalFreq<12; dalFreq++){
+            for (int spitsFreq=11;spitsFreq<18;spitsFreq++){
+                for (int dayFreq=16; dayFreq<21; dayFreq++){
+                    for (int dalFreq=8; dalFreq<10; dalFreq++){
                         for (int it=0; it<10; it++){
                             UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
                             simulation.run();
