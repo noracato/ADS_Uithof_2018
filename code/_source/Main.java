@@ -23,24 +23,31 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out6.txt");}
+        try {writeIt("bin/out_top.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
         out.println("q  spitsFreq dayFreq dalFreq tramstop totalArriving totalLeaving maxQueueLength time maxWaitingTime time  maxTramDelay time: averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
 
-        for (int q=3;q<6;q++){
-            for (int spitsFreq=11;spitsFreq<18;spitsFreq++){
-                for (int dayFreq=16; dayFreq<21; dayFreq++){
-                    for (int dalFreq=8; dalFreq<10; dalFreq++){
-                        for (int it=0; it<10; it++){
-                            UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
-                            simulation.run();
-                        }
-                    }
-                }
-            }
-        }		
+        // for (int q=3;q<6;q++){
+        //     for (int spitsFreq=11;spitsFreq<18;spitsFreq++){
+        //         for (int dayFreq=16; dayFreq<21; dayFreq++){
+        //             for (int dalFreq=8; dalFreq<10; dalFreq++){
+        //                 for (int it=0; it<10; it++){
+        double q=3;
+        int spitsFreq=12;
+        int dayFreq = 7;
+        int dalFreq = 6;
+        for (int it=0; it<100;it++){
+            UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
+            simulation.run();            
+        }
+
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }		
 	}
     private static void writeIt(String file) throws FileNotFoundException {
             out = new PrintStream(new FileOutputStream(file, true));
@@ -75,7 +82,7 @@ class UithoflijnSim{
 
 
 
-        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees6_punt.csv", q);
+        tramstops = DistributionVariables.getTramStops("../input_analysis/_data/inleesbestand.csv", q);
 
         int print = 0;
 		//to do: aanmaken trams en arrivals
