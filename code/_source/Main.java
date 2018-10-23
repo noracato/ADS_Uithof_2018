@@ -23,32 +23,31 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out_top_test.txt");}
+        try {writeIt("bin/out_top.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
         out.println("tramstop totalArriving totalLeaving totalArrMorning totalLeaveMorning totalArrEve totalLeaveEve maxQueueLength time maxWaitingTime time averageWaitTime maxTramDelay averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
 
         // for (int q=3;q<6;q++){
-        //     for (int spitsFreq=11;spitsFreq<18;spitsFreq++){
-        //         for (int dayFreq=16; dayFreq<21; dayFreq++){
-        //             for (int dalFreq=8; dalFreq<10; dalFreq++){
+        //     for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
+        //         for (int dayFreq=4; dayFreq<8; dayFreq++){
+        //             for (int dalFreq=4; dalFreq<8; dalFreq++){
         //                 for (int it=0; it<10; it++){
-        double q=3;
+        double q=4;
         int spitsFreq=12;
-        int dayFreq = 7;
+        int dayFreq = 6;
         int dalFreq = 6;
         for (int it=0; it<100;it++){
             UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
             simulation.run();            
-        }
-
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }		
-	}
+            }
+            //             }
+            //         }
+            //     }
+            // }
+        }		
+	
     private static void writeIt(String file) throws FileNotFoundException {
             out = new PrintStream(new FileOutputStream(file, true));
     }
