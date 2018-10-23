@@ -23,16 +23,16 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out25.txt");}
+        try {writeIt("bin/out15.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
         out.println("q  spitsFreq dayFreq dalFreq tramstop totalArriving totalLeaving maxQueueLength time maxWaitingTime time  maxTramDelay time: averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
 
         for (int q=3;q<6;q++){
-            for (int spitsFreq=7;spitsFreq<13;spitsFreq++){
-                for (int dayFreq=7; dayFreq<13; dayFreq++){
-                    for (int dalFreq=7; dalFreq<13; dalFreq++){
+            for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
+                for (int dayFreq=8; dayFreq<14; dayFreq++){
+                    for (int dalFreq=5; dalFreq<9; dalFreq++){
                         for (int it=0; it<10; it++){
                             UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
                             simulation.run();
@@ -75,7 +75,7 @@ class UithoflijnSim{
 
 
 
-        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees25_punt.csv", q);
+        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees15_punt.csv", q);
 
         int print = 0;
 		//to do: aanmaken trams en arrivals
