@@ -1,11 +1,16 @@
 class Statistics{
  	public int totPassengers = 0;
  	public int totLeaving = 0;
+ 	public int morningPassengers = 0;
+ 	public int morningLeaving = 0;
+ 	public int eveningPassengers = 0;
+ 	public int eveningLeaving = 0;
  	public int currqueueSize = 0;
  	public double maxWaitingTime=0;
  	public int maxQueuePassenger=0;
  	public double timeMaxPassQueue=0;
  	public double timeMaxWait=0;
+ 	public double passInTot =0;
  	//delays
  	public double averageDelay=0;
  	public double maxDelay=0;
@@ -21,6 +26,15 @@ class Statistics{
 		this.totPassengers += queuePassengerSize-currqueueSize;
 		this.currqueueSize = queuePassengerSize-passIn;
 		this.totLeaving += passOut;
+		this.passInTot += passIn;
+		if (time>60-17 && time<180){
+			this.morningPassengers+=queuePassengerSize-currqueueSize;
+			this.morningLeaving += passOut;
+		}
+		if (time>600-17 && time<720){
+			this.eveningPassengers += queuePassengerSize-currqueueSize;
+			this.eveningLeaving += passOut;
+		}
 		if (this.maxQueuePassenger < queuePassengerSize){
 			this.maxQueuePassenger = queuePassengerSize;
 			this.timeMaxPassQueue = time;

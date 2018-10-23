@@ -27,7 +27,7 @@ public class Main{
         catch(IOException e) {
           e.printStackTrace();
         }
-        out.println("q  spitsFreq dayFreq dalFreq tramstop totalArriving totalLeaving maxQueueLength time maxWaitingTime time  maxTramDelay time: averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
+        out.println("tramstop totalArriving totalLeaving totalArrMorning totalLeaveMorning totalArrEve totalLeaveEve maxQueueLength time maxWaitingTime time averageWaitTime maxTramDelay averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
 
         // for (int q=3;q<6;q++){
         //     for (int spitsFreq=11;spitsFreq<18;spitsFreq++){
@@ -96,14 +96,16 @@ class UithoflijnSim{
 		} //accTotPass(); 
         for (TramStop tramstop : tramstops){
         Statistics stats = tramstop.getStats();
-        if (!tramstop.queuePassengers.isEmpty()) out.println(q+" "+spitsFreq+" "+dayFreq+" "+dalFreq+" "+tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+        if (!tramstop.queuePassengers.isEmpty()) out.println(tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+                " "+stats.morningPassengers+" "+stats.morningLeaving+" "+stats.eveningPassengers+" "+ stats.eveningLeaving+
                 " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
-                " "+stats.timeMaxWait+" "+stats.maxDelay+" "+stats.maxDelaytime+
+                " "+stats.timeMaxWait+" "+tramstop.getAverageWait()+" "+stats.maxDelaytime+
                 " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
                 " "+stats.getFractionDelayedRuns()+" "+tramstop.queuePassengers.size());
-        else out.println(q+" "+spitsFreq+" "+dayFreq+" "+dalFreq+" "+tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+        else out.println(tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+                " "+stats.morningPassengers+" "+stats.morningLeaving+" "+stats.eveningPassengers+" "+ stats.eveningLeaving+
                 " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
-                " "+stats.timeMaxWait+" "+stats.maxDelay+" "+stats.maxDelaytime+
+                " "+stats.timeMaxWait+" "+tramstop.getAverageWait()+" "+stats.maxDelaytime+
                 " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
                 " "+stats.getFractionDelayedRuns()+" "+0);
         }
