@@ -23,7 +23,7 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out15.txt");}
+        try {writeIt("bin/out6.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
@@ -32,7 +32,7 @@ public class Main{
         for (int q=3;q<6;q++){
             for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
                 for (int dayFreq=8; dayFreq<14; dayFreq++){
-                    for (int dalFreq=5; dalFreq<9; dalFreq++){
+                    for (int dalFreq=7; dalFreq<12; dalFreq++){
                         for (int it=0; it<10; it++){
                             UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
                             simulation.run();
@@ -75,7 +75,7 @@ class UithoflijnSim{
 
 
 
-        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees15_punt.csv", q);
+        tramstops = DistributionVariables.getTramStops("../output_analysis/_data/validation/inlees6_punt.csv", q);
 
         int print = 0;
 		//to do: aanmaken trams en arrivals
