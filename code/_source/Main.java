@@ -23,7 +23,7 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out_top.txt");}
+        try {writeIt("bin/out_top_test.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
