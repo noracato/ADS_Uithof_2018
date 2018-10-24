@@ -92,6 +92,7 @@ class TramStop{
 		runtime = Math.max(runtime, runtimeMin);
 		double arrivalTime = Math.max(timeLastArrival,timeEvent+runtime);
 		timeLastArrival = arrivalTime+0.000001;
+		stats.setRuntime(runtime);
 		return new Arrival(arrivalTime, tram);
 	}
 	public boolean serverIdle(Tram tram){

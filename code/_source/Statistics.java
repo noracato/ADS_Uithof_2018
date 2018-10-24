@@ -19,6 +19,8 @@ class Statistics{
  	public double numDelays=0;
  	public double numDelaysOverOne = 0;
  	public double totRuns=0;
+ 	public double runtime = 0;
+ 	public double numRuns = 0;
 
 
  	public Statistics(){}
@@ -64,6 +66,13 @@ class Statistics{
 	}
 	public double getFractionDelayedRuns(){
 		return numDelays/totRuns;
+	}
+	public void setRuntime(double runtime){
+		this.runtime = runtime;
+		this.numRuns++;
+	}
+	public double getAverageRuntime(){
+		return runtime/numRuns;
 	}
 
 }
