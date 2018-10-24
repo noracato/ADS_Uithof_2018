@@ -1,3 +1,7 @@
+// Maaike Koninx en Nora Schinkel
+// ADS 2018
+
+
 import java.util.PriorityQueue;
 import java.util.LinkedList; 
 import java.util.Queue;
@@ -17,23 +21,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.File;
 //////////////////////////////
- 
+
 
 public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out_runtime.txt");}
+        try {writeIt("bin/out.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
-        //out.println("tramstop totalArriving totalLeaving totalArrMorning totalLeaveMorning totalArrEve totalLeaveEve maxQueueLength time maxWaitingTime time averageWaitTime maxTramDelay maxTramDelayTime averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
+
         out.println("tramstop avgRuntime");
-        // for (int q=3;q<6;q++){
-        //     for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
-        //         for (int dayFreq=4; dayFreq<8; dayFreq++){
-        //             for (int dalFreq=4; dalFreq<8; dalFreq++){
-        //                 for (int it=0; it<10; it++){
+
+        // RUN VARIABLES
         double q=4;
         int spitsFreq=12;
         int dayFreq = 6;
@@ -42,10 +43,6 @@ public class Main{
             UithoflijnSim simulation = new UithoflijnSim(out, q, spitsFreq, dayFreq, dalFreq);
             simulation.run();            
             }
-            //             }
-            //         }
-            //     }
-            // }
         }		
 	
     private static void writeIt(String file) throws FileNotFoundException {
