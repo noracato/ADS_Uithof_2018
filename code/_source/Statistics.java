@@ -68,7 +68,7 @@ class Statistics{
 		return numDelays/totRuns;
 	}
 	public void setRuntime(double runtime){
-		this.runtime = runtime;
+		this.runtime += runtime;
 		this.numRuns++;
 	}
 	public double getAverageRuntime(){
