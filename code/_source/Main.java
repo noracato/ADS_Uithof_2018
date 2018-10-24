@@ -23,12 +23,12 @@ public class Main{
     static PrintStream out;
 	public static void main(String[] args){
 
-        try {writeIt("bin/out_top.txt");}
+        try {writeIt("bin/out_runtime.txt");}
         catch(IOException e) {
           e.printStackTrace();
         }
-        out.println("tramstop totalArriving totalLeaving totalArrMorning totalLeaveMorning totalArrEve totalLeaveEve maxQueueLength time maxWaitingTime time averageWaitTime maxTramDelay averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
-
+        //out.println("tramstop totalArriving totalLeaving totalArrMorning totalLeaveMorning totalArrEve totalLeaveEve maxQueueLength time maxWaitingTime time averageWaitTime maxTramDelay maxTramDelayTime averageTramDelay/total averageTramDelay/delayed fractionOfRunsDelayed passengersNotArrived");
+        out.println("tramstop avgRuntime");
         // for (int q=3;q<6;q++){
         //     for (int spitsFreq=10;spitsFreq<16;spitsFreq++){
         //         for (int dayFreq=4; dayFreq<8; dayFreq++){
@@ -95,18 +95,19 @@ class UithoflijnSim{
 		} //accTotPass(); 
         for (TramStop tramstop : tramstops){
         Statistics stats = tramstop.getStats();
-        if (!tramstop.queuePassengers.isEmpty()) out.println(tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
-                " "+stats.morningPassengers+" "+stats.morningLeaving+" "+stats.eveningPassengers+" "+ stats.eveningLeaving+
-                " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
-                " "+stats.timeMaxWait+" "+tramstop.getAverageWait()+" "+stats.maxDelaytime+
-                " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
-                " "+stats.getFractionDelayedRuns()+" "+tramstop.queuePassengers.size());
-        else out.println(tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
-                " "+stats.morningPassengers+" "+stats.morningLeaving+" "+stats.eveningPassengers+" "+ stats.eveningLeaving+
-                " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
-                " "+stats.timeMaxWait+" "+tramstop.getAverageWait()+" "+stats.maxDelaytime+
-                " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
-                " "+stats.getFractionDelayedRuns()+" "+0);
+        out.println(tramstop.id+" "+stats.getAverageRuntime());
+        // if (!tramstop.queuePassengers.isEmpty()) out.println(tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+        //         " "+stats.morningPassengers+" "+stats.morningLeaving+" "+stats.eveningPassengers+" "+ stats.eveningLeaving+
+        //         " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
+        //         " "+stats.timeMaxWait+" "+tramstop.getAverageWait()+" "+stats.maxDelay+" "+stats.maxDelaytime+
+        //         " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
+        //         " "+stats.getFractionDelayedRuns()+" "+tramstop.queuePassengers.size());
+        // else out.println(tramstop.id+" "+stats.totPassengers+" "+stats.totLeaving+
+        //         " "+stats.morningPassengers+" "+stats.morningLeaving+" "+stats.eveningPassengers+" "+ stats.eveningLeaving+
+        //         " "+stats.maxQueuePassenger+" "+stats.timeMaxPassQueue+" "+stats.maxWaitingTime+
+        //         " "+stats.timeMaxWait+" "+tramstop.getAverageWait()+" "+stats.maxDelay+" "+stats.maxDelaytime+
+        //         " "+stats.getAverageDelayTimeTot()+" "+stats.getAverageDelayTimeDel()+
+        //         " "+stats.getFractionDelayedRuns()+" "+0);
         }
     }
 
